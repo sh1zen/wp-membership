@@ -1,0 +1,13 @@
+/**
+ * @author    sh1zen
+ * @copyright Copyright (C) 2024.
+ * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
+ */
+
+:root {
+    --border-color: #c49350;
+    --tabs-bg-selected-color: #c49350;
+    --tabs-text-selected-color: #fff;
+    --main-dark-color: #dc9a30;
+    --header-text-color: #fff;
+}
