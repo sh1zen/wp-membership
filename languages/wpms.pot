@@ -1,0 +1,347 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: wpms-translation\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-"
+"optimizer/\n"
+"POT-Creation-Date: 2023-11-13 23:31+0100\n"
+"PO-Revision-Date: 2020-05-13 02:34+0200\n"
+"Last-Translator: sh1zen\n"
+"Language-Team: sh1zen\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_ex;_x;_n;_nx;_n_noop;_nx_noop;esc_html__;"
+"esc_attr__;esc_attr_e;esc_html_e;esc_attr_x;esc_html_x\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: languages\n"
+
+#: admin/PagesHandler.class.php:47
+msgid "WPMS Modules Options"
+msgstr ""
+
+#: admin/PagesHandler.class.php:47
+msgid "Modules"
+msgstr ""
+
+#: admin/PagesHandler.class.php:52
+msgid "WPMS Settings"
+msgstr ""
+
+#: admin/PagesHandler.class.php:52 admin/PluginInit.class.php:245
+msgid "Settings"
+msgstr ""
+
+#: admin/PagesHandler.class.php:98
+msgid "Settings Saved"
+msgstr ""
+
+#: admin/PagesHandler.class.php:99
+msgid "Request fail"
+msgstr ""
+
+#: admin/PagesHandler.class.php:100
+msgid "Request succeed"
+msgstr ""
+
+#: admin/PagesHandler.class.php:119
+msgid "Modules:"
+msgstr ""
+
+#: admin/PagesHandler.class.php:122
+msgid ""
+"This plugin uses modules, so you can disable non necessary one to not "
+"weigh down WordPress."
+msgstr ""
+
+#: admin/PagesHandler.class.php:126
+msgid "Currently active:"
+msgstr ""
+
+#: admin/PagesHandler.class.php:127
+#, php-format
+msgid "Manage modules: <a href=\"%s\">here</a>."
+msgstr ""
+
+#: admin/PagesHandler.class.php:128
+#, php-format
+msgid "Configure them: <a href=\"%s\">here</a>."
+msgstr ""
+
+#: admin/PagesHandler.class.php:137
+msgid "Support this project, buy me a coffee."
+msgstr ""
+
+#: admin/PagesHandler.class.php:152
+msgid "Want to support in other ways?"
+msgstr ""
+
+#: admin/PagesHandler.class.php:155
+msgid "Help me translating"
+msgstr ""
+
+#: admin/PagesHandler.class.php:158
+msgid "Leave a review"
+msgstr ""
+
+#: admin/PagesHandler.class.php:164
+msgid "Source code"
+msgstr ""
+
+#: admin/PagesHandler.class.php:167
+msgid "About me"
+msgstr ""
+
+#: admin/PluginInit.class.php:226
+msgid "Buy me a beer"
+msgstr ""
+
+#: modules/communications.class.php:56
+#: modules/communications.class.php:114 modules/levels.class.php:53
+#: modules/levels.class.php:116 modules/settings.class.php:73
+msgid "Action was correctly executed"
+msgstr ""
+
+#: modules/communications.class.php:59
+#: modules/communications.class.php:117 modules/levels.class.php:56
+#: modules/levels.class.php:119 modules/settings.class.php:76
+msgid "Action execution failed"
+msgstr ""
+
+#: modules/communications.class.php:149 modules/levels.class.php:151
+msgid "List"
+msgstr ""
+
+#: modules/communications.class.php:154 modules/levels.class.php:156
+msgid "Add New"
+msgstr ""
+
+#: modules/communications.class.php:179
+#: modules/supporters/CommunicationList.class.php:220
+msgid "Subject"
+msgstr ""
+
+#: modules/communications.class.php:180
+#: modules/supporters/CommunicationList.class.php:221
+msgid "Message"
+msgstr ""
+
+#: modules/communications.class.php:181
+#: modules/communications.class.php:182 modules/levels.class.php:177
+#: modules/supporters/LevelsList.class.php:275
+msgid "Duration"
+msgstr ""
+
+#: modules/communications.class.php:183 modules/levels.class.php:179
+msgid "Year"
+msgstr ""
+
+#: modules/communications.class.php:184 modules/levels.class.php:180
+msgid "Month"
+msgstr ""
+
+#: modules/communications.class.php:185 modules/levels.class.php:181
+msgid "Day"
+msgstr ""
+
+#: modules/communications.class.php:186 modules/levels.class.php:182
+msgid "Hour"
+msgstr ""
+
+#: modules/communications.class.php:187
+msgid "Minutes"
+msgstr ""
+
+#: modules/communications.class.php:189
+msgid "Event"
+msgstr ""
+
+#: modules/communications.class.php:190
+msgid "Sign Up"
+msgstr ""
+
+#: modules/communications.class.php:191
+msgid "Join Membership"
+msgstr ""
+
+#: modules/communications.class.php:192
+msgid "Before Membership End"
+msgstr ""
+
+#: modules/communications.class.php:193
+msgid "After Membership End"
+msgstr ""
+
+#: modules/communications.class.php:195
+msgid "For Subscription"
+msgstr ""
+
+#: modules/communications.class.php:196 modules/levels.class.php:189
+#: modules/supporters/CommunicationList.class.php:223
+msgid "Active"
+msgstr ""
+
+#: modules/communications.class.php:205 modules/levels.class.php:198
+msgid "Add new"
+msgstr ""
+
+#: modules/levels.class.php:175
+#: modules/supporters/LevelsList.class.php:273
+msgid "Title"
+msgstr ""
+
+#: modules/levels.class.php:176
+msgid "Description"
+msgstr ""
+
+#: modules/levels.class.php:178
+msgid "Unit"
+msgstr ""
+
+#: modules/levels.class.php:184
+#: modules/supporters/LevelsList.class.php:276
+msgid "Type"
+msgstr ""
+
+#: modules/levels.class.php:185
+msgid "Finite"
+msgstr ""
+
+#: modules/levels.class.php:186
+msgid "Indefinite"
+msgstr ""
+
+#: modules/levels.class.php:187
+msgid "Serial"
+msgstr ""
+
+#: modules/settings.class.php:93
+msgid "Reset Plugin options"
+msgstr ""
+
+#: modules/settings.class.php:95
+msgid "Restore Plugin options"
+msgstr ""
+
+#: modules/settings.class.php:97
+msgid "Export Plugin options"
+msgstr ""
+
+#: modules/settings.class.php:110
+msgid "Import Plugin options"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:24
+#: modules/supporters/LevelsList.class.php:25
+msgid "List view"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:29
+msgid "activity"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:30
+msgid "activities"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:40
+#: modules/supporters/LevelsList.class.php:68
+msgid "Search"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:78
+#: modules/supporters/LevelsList.class.php:111
+msgid "Filter"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:81
+msgid "View all messages"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:82
+msgid "View active Communications"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:83
+msgid "View inactive Communications"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:102
+#: modules/supporters/LevelsList.class.php:135
+msgid "Export File Format"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:109
+#: modules/supporters/LevelsList.class.php:142
+msgid "Export Data"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:218
+#: modules/supporters/LevelsList.class.php:272
+msgid "ID"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:219
+msgid "Level"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:222
+msgid "Period"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:237
+#: modules/supporters/LevelsList.class.php:306
+msgid "No communications found."
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:32
+msgid "level"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:33
+msgid "levels"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:48
+msgid "Edit"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:51
+#: modules/supporters/LevelsList.class.php:293
+msgid "Activate"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:54
+#: modules/supporters/LevelsList.class.php:294
+msgid "Suspend"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:57
+#: modules/supporters/LevelsList.class.php:295
+msgid "Delete"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:114
+msgid "View all Levels"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:115
+msgid "View active Levels"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:116
+msgid "View inactive Levels"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:274
+msgid "Count"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:277
+msgid "Status"
+msgstr ""
