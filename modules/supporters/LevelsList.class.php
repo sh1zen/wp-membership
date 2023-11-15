@@ -56,7 +56,7 @@ class LevelsList extends \WP_List_Table
 
         $row_actions[] = "<span class='delete'><a href='" . Actions::get_url($this->action_hook, 'delete') . "&level_id=$item->id" . "'>" . __('Delete', 'wpms') . "</a></span>";
 
-        $output .= '<br><div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
+        $output .= '<div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
 
         return $output;
     }
@@ -303,5 +303,42 @@ class LevelsList extends \WP_List_Table
     public function no_items()
     {
         _e('No Subscriptions Plan Found.', 'wpms');
+    }
+
+    protected function bulk_actions($which = '')
+    {
+        if (is_null($this->_actions)) {
+            $this->_actions = $this->get_bulk_actions();
+        }
+
+        if (empty($this->_actions)) {
+            return;
+        }
+
+        echo '<label for="bulk-action-selector-' . esc_attr($which) . '" class="screen-reader-text">' . __('Select bulk action') . '</label>';
+        echo "<select name='bulk-action' id='bulk-action-selector-" . esc_attr($which) . "'>";
+        echo '<option value="-1">' . __('Bulk actions') . "</option>";
+
+        foreach ($this->_actions as $key => $value) {
+            if (is_array($value)) {
+                echo "<optgroup label='" . esc_attr($key) . "'>";
+
+                foreach ($value as $name => $title) {
+                    $class = ('edit' === $name) ? ' class="hide-if-no-js"' : '';
+
+                    echo "<option value='" . esc_attr($name) . "' $class>$title</option>";
+                }
+                echo "</optgroup>";
+            }
+            else {
+                $class = ('edit' === $key) ? ' class="hide-if-no-js"' : '';
+
+                echo '<option value="' . esc_attr($key) . '"' . $class . '>' . $value . "</option>";
+            }
+        }
+
+        echo "</select>";
+
+        submit_button(__('Apply'), 'action', $this->action_hook, false);
     }
 }

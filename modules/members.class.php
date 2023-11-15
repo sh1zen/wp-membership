@@ -25,48 +25,16 @@ class Mod_Members extends Module
     {
         Actions::request($this->action_hook, function ($action) {
 
-            $user_ids = array_filter($_REQUEST['bulk-users-id'] ?? []);
-
-            if (empty($user_ids)) {
-                return;
-            }
-
-            switch (strtolower($_REQUEST['action2'])) {
-                case 'drop':
-                    $response = true;
-                    foreach ($user_ids as $user_id) {
-                        $response &= wpms_memberhsip_drop($user_id);
-                    }
-                    break;
-                default:
-                    $response = false;
-            }
-
-            if ($response) {
-                $this->add_notices('success', __('Action was correctly executed', $this->context));
-            }
-            else {
-                $this->add_notices('warning', __('Action execution failed', $this->context));
-            }
-
-        }, true, true);
-
-        Actions::request($this->action_hook, function ($action) {
-
             $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_LEVELS);
 
             switch ($action) {
 
-                case 'activate':
-                    $response = $query->update(['active' => '1'], ['id' => absint($_REQUEST['level_id'])])->query();
+                case 'add':
+                    $response = wpms_add_subscription($_REQUEST['user_id'], $_REQUEST['level_id']);
                     break;
 
-                case 'deactivate':
-                    $response = $query->update(['active' => '0'], ['id' => absint($_REQUEST['level_id'])])->query();
-                    break;
-
-                case 'delete':
-                    $response = $query->delete(['id' => absint($_REQUEST['level_id'])])->query();
+                case 'drop':
+                    $response = wpms_memberhsip_drop($_REQUEST['user_id']);
                     break;
 
                 case 'export':
@@ -82,17 +50,28 @@ class Mod_Members extends Module
 
                 default:
                     $response = false;
+
+                    $user_ids = array_filter($_REQUEST['bulk-users-id'] ?? []);
+
+                    if (!empty($user_ids)) {
+                        if (strtolower($_REQUEST['bulk-action']) == 'drop') {
+                            $response = true;
+                            foreach ($user_ids as $user_id) {
+                                $response &= wpms_memberhsip_drop($user_id);
+                            }
+                        }
+                    }
             }
 
-            return [
-                'wps-status' => $response ? 'success' : 'warning',
-                'wps-notice' => $response ? __('Action was correctly executed', $this->context) : __('Action execution failed', $this->context)
-            ];
+            $this->add_notices(
+                $response ? 'success' : 'warning',
+                $response ? __('Action was correctly executed', $this->context) : __('Action execution failed', $this->context)
+            );
 
-        }, false, true);
+        });
     }
 
-    public function render_admin_page(): void
+    public function render_sub_modules(): void
     {
         ?>
         <section class="wps-wrap">
@@ -126,7 +105,7 @@ class Mod_Members extends Module
             <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
                 <?php $table->display(); ?>
-                <?php Graphic::nonce_field($this->action_hook); ?>
+                <?php Actions::nonce_field($this->action_hook); ?>
             </form>
         </block>
         <?php

@@ -78,6 +78,8 @@ class PluginInit
 
             wps_run_upgrade('wpms', WPMS_VERSION, WPMS_ADMIN . "upgrades/");
 
+            wps_utils()->is_upgrading(true);
+
             wps('wpms')->moduleHandler->upgrade();
         }
     }

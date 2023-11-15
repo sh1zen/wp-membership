@@ -84,7 +84,7 @@ class Mod_Settings extends Module
         ?>
         <form method="POST" autocapitalize="off" autocomplete="off">
 
-            <?php Graphic::nonce_field($this->action_hook); ?>
+            <?php Actions::nonce_field($this->action_hook); ?>
 
             <block class="wps-gridRow">
                 <row class="wps-custom-action wps-row">

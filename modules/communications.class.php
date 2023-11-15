@@ -11,6 +11,7 @@ use WPS\core\Actions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Query;
+use WPS\core\UtilEnv;
 use WPS\modules\Module;
 
 use WPMembership\modules\supporters\CommunicationList;
@@ -23,11 +24,20 @@ class Mod_Communications extends Module
 
     public function actions(): void
     {
+        Actions::schedule($this->hash, MINUTE_IN_SECONDS * 30, function () {
+            wps_log('cron-execution: Mod_Communications');
+        });
+
         Actions::request($this->action_hook, function ($action) {
 
             $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS);
 
             switch ($action) {
+
+                case 'edit':
+                    return;
+
+                case 'update':
                 case 'add_new':
                     $request = $_REQUEST['new_comm'];
 
@@ -38,7 +48,12 @@ class Mod_Communications extends Module
                     $query->insert(['event' => $request['event'] ?: 'signup']);
                     $query->insert(['timegap' => (absint($request['time.unit'] ?: 0)) * (absint($request['time.digit'] ?: 0))]);
 
+                    if ($action == 'update') {
+                        $query->where(['id' => $request['comm_id']]);
+                    }
+
                     $response = $query->query();
+
                     break;
 
                 case 'activate':
@@ -69,12 +84,12 @@ class Mod_Communications extends Module
                     break;
 
                 default:
-                    $level_ids = array_filter($_REQUEST['bulk-levels-id'] ?? []);
+                    $level_ids = array_filter($_REQUEST['bulk-comm-ids'] ?? []);
 
                     $response = false;
 
                     if (!empty($level_ids)) {
-                        switch (strtolower($_REQUEST['action2'])) {
+                        switch (strtolower($_REQUEST['bulk-action'])) {
                             case 'activate':
                                 $response = $query->update(['active' => '1'], ['id' => $level_ids])->query();
                                 break;
@@ -90,42 +105,102 @@ class Mod_Communications extends Module
                     }
             }
 
-            return [
-                'wps-status' => $response ? 'success' : 'warning',
-                'wps-notice' => $response ? __('Action was correctly executed', $this->context) : __('Action execution failed', $this->context)
-            ];
+            $this->add_notices(
+                $response ? 'success' : 'warning',
+                $response ? __('Action was correctly executed', $this->context) : __('Action execution failed', $this->context)
+            );
 
-        }, true, true);
+        });
     }
 
-    public function render_admin_page(): void
+    public function render_sub_modules(): void
     {
+        $this->remove_browser_query_args(['bulk-action', 'bulk-comm-ids']);
         ?>
         <section class="wps-wrap">
             <block class="wps">
                 <section class='wps-header'><h1><?php _e('Communications', 'wpms'); ?></h1></section>
                 <?php
 
-                echo Graphic::generateHTML_tabs_panels(array(
+                if (Actions::get_request($this->action_hook) === 'edit') {
+                    echo $this->render_edit();
+                }
+                else {
+                    echo Graphic::generateHTML_tabs_panels(array(
 
-                    array(
-                        'id'        => 'wpms-communications-list',
-                        'tab-title' => __('List', 'wpfs'),
-                        'callback'  => array($this, 'render_list')
-                    ),
-                    array(
-                        'id'        => 'wpms-communications-new',
-                        'tab-title' => __('Add New', 'wpfs'),
-                        'callback'  => array($this, 'render_new')
-                    )
-                ));
+                        array(
+                            'id'        => 'wpms-communications-list',
+                            'tab-title' => __('List', 'wpfs'),
+                            'callback'  => array($this, 'render_list')
+                        ),
+                        array(
+                            'id'        => 'wpms-communications-new',
+                            'tab-title' => __('Add New', 'wpfs'),
+                            'callback'  => array($this, 'render_new')
+                        )
+                    ));
+                }
                 ?>
             </block>
         </section>
         <?php
     }
 
-    public function render_new(): string
+    public function render_edit(): string
+    {
+        if (isset($_REQUEST['comm_id'])) {
+            $comm = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS)->where(['id' => absint($_REQUEST['comm_id'])])->query(true);
+        }
+
+        if (empty($comm)) {
+            return '<strong>' . __('Not valid Message ID was passed.', 'wpms') . '</strong>';
+        }
+
+        $comm_values = [
+            'id'         => $comm->id,
+            'subject'    => $comm->subject,
+            'message'    => $comm->message,
+            'level_id'   => ['All' => 0],
+            'active'     => UtilEnv::to_boolean($comm->active),
+            'event'      => match ($comm->event) {
+                'signup' => [__("Sign Up", 'wpms') => 'signup'],
+                'before' => [__("Before Subscription Expire", 'wpms') => 'before'],
+                'after' => [__("After Subscription Expire", 'wpms') => 'after'],
+                default => [__("Join Subscription", 'wpms') => 'join']
+            },
+            'time.digit' => 0,
+            'time.unit'  => [__("Day", 'wpms') => DAY_IN_SECONDS]
+        ];
+
+        foreach (wpms_get_levels() as $level) {
+            if ($comm->level_id == $level->id) {
+                $comm_values['level_id'] = [ucwords($level->title) => $level->id];
+                break;
+            }
+        }
+
+        $time_units = [
+            __("Year", 'wpms')    => YEAR_IN_SECONDS,
+            __("Month", 'wpms')   => MONTH_IN_SECONDS,
+            __("Day", 'wpms')     => DAY_IN_SECONDS,
+            __("Hour", 'wpms')    => HOUR_IN_SECONDS,
+            __("Minutes", 'wpms') => MINUTE_IN_SECONDS
+        ];
+
+        if ($comm->timegap) {
+            foreach ($time_units as $unit => $value) {
+                if ($comm->timegap % $value === 0) {
+                    $comm_values['time.digit'] = $comm->timegap / $value;
+                    $comm_values['time.unit'] = [$unit => $value];
+                    break;
+                }
+            }
+        }
+
+        return $this->render_new($comm_values);
+    }
+
+    public function render_new($defaults = []): string
     {
         ob_start();
         ?>
@@ -140,33 +215,46 @@ class Mod_Communications extends Module
 
             $setting_fields = $this->group_setting_fields(
                 $this->group_setting_fields(
-                    $this->setting_field(__('Subject', 'wpms'), 'subject', 'text'),
-                    $this->setting_field(__('Message', 'wpms'), 'message', 'textarea'),
-                    $this->setting_field(__('Message Time', 'wpms'), 'time.digit', 'dropdown', ['default_value' => '0', 'list' => range(0, 365)]),
-                    $this->setting_field(__('Time Unit', 'wpms'), 'time.unit', 'dropdown', ['default_value' => [__("Day", 'wpms') => DAY_IN_SECONDS], 'list' => [
+                    $this->setting_field(__('Subject', 'wpms'), 'subject', 'text', ['value' => $defaults['subject'] ?? '']),
+                    $this->setting_field(__('Message', 'wpms'), 'message', 'textarea', ['value' => $defaults['message'] ?? '']),
+                    $this->setting_field(__('Message Time', 'wpms'), 'time.digit', 'dropdown', ['value' => $defaults['time.digit'] ?? 0, 'list' => range(0, 365)]),
+                    $this->setting_field(__('Time Unit', 'wpms'), 'time.unit', 'dropdown', ['value' => $defaults['time.unit'] ?? [__("Day", 'wpms') => DAY_IN_SECONDS], 'list' => [
                         __("Year", 'wpms')    => YEAR_IN_SECONDS,
                         __("Month", 'wpms')   => MONTH_IN_SECONDS,
                         __("Day", 'wpms')     => DAY_IN_SECONDS,
                         __("Hour", 'wpms')    => HOUR_IN_SECONDS,
                         __("Minutes", 'wpms') => MINUTE_IN_SECONDS
                     ]]),
-                    $this->setting_field(__('Event', 'wpms'), 'event', 'dropdown', ['default_value' => [__("Join Subscription", 'wpms') => 'join'], 'list' => [
-                        __("Sign Up", 'wpms')                 => 'signup',
-                        __("Join Subscription", 'wpms')       => 'join',
-                        __("Before Subscription Expire", 'wpms') => 'before',
-                        __("After Subscription Expire", 'wpms')  => 'after'
-                    ]]),
-                    $this->setting_field(__('For Subscription', 'wpms'), 'level_id', 'dropdown', ['default_value' => [__("All", 'wpms') => 0], 'list' => $subscriptions]),
-                    $this->setting_field(__('Active', 'wpms'), 'active', 'checkbox', ['default_value' => true])
+                    $this->setting_field(__('Event', 'wpms'), 'event', 'dropdown', [
+                        'value' => $defaults['event'] ?? [__("Join Subscription", 'wpms') => 'join'],
+                        'list'  => [
+                            __("Sign Up", 'wpms')                    => 'signup',
+                            __("Join Subscription", 'wpms')          => 'join',
+                            __("Before Subscription Expire", 'wpms') => 'before',
+                            __("After Subscription Expire", 'wpms')  => 'after'
+                        ]
+                    ]),
+                    $this->setting_field(__('For Subscription', 'wpms'), 'level_id', 'dropdown', [
+                        'value' => $defaults['level_id'] ?? [__("All", 'wpms') => 0],
+                        'list'  => $subscriptions
+                    ]),
+                    $this->setting_field(__('Active', 'wpms'), 'active', 'checkbox', ['value' => $defaults['active'] ?? true])
                 ),
             );
 
-            Graphic::nonce_field($this->action_hook);
+            Actions::nonce_field($this->action_hook);
             Graphic::generate_fields($setting_fields, $this->infos(), ['name_prefix' => 'new_comm']);
-
             ?>
             <row class="wps-custom-action wps-row">
-                <?php echo Actions::get_action_button($this->action_hook, 'add_new', __('Add new', 'wpms'), 'button-primary'); ?>
+                <?php
+                if (isset($defaults['id']) and $defaults['id']) {
+                    echo Actions::get_action_button($this->action_hook, 'update', __('Update', 'wpms'), 'button-primary');
+                    echo "<input type='hidden' name='new_comm[comm_id]' value='" . esc_attr($defaults['id']) . "'>";
+                }
+                else {
+                    echo Actions::get_action_button($this->action_hook, 'add_new', __('Add new', 'wpms'), 'button-primary');
+                }
+                ?>
             </row>
         </form>
         <?php
@@ -186,7 +274,7 @@ class Mod_Communications extends Module
             <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
                 <?php $table->display(); ?>
-                <?php Graphic::nonce_field($this->action_hook); ?>
+                <?php Actions::nonce_field($this->action_hook); ?>
             </form>
         </block>
         <?php

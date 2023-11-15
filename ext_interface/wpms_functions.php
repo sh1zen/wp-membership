@@ -133,7 +133,7 @@ function wpms_send_message($user, $comm_id)
     if (!$comm) {
         return false;
     }
-// todo add text replacer tags
 
+    // todo add text replacer tags
     return wp_mail($user->user_email, $comm->subject, $comm->message);
 }

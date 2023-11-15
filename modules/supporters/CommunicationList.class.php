@@ -216,7 +216,7 @@ class CommunicationList extends \WP_List_Table
         $query->join(WP_MEMBERSHIP_TABLE_COMMUNICATIONS, WP_MEMBERSHIP_TABLE_LEVELS, ['level_id' => 'id'], 'LEFT JOIN');
 
         $query->orderby(
-            match ($request['orderby'] ?: 'id') {
+            match ($request['orderby'] ?? 'id') {
                 'level_name' => [WP_MEMBERSHIP_TABLE_LEVELS => 'title'],
                 default => [WP_MEMBERSHIP_TABLE_COMMUNICATIONS => 'id'],
             },
@@ -291,11 +291,48 @@ class CommunicationList extends \WP_List_Table
 
     function column_cb($item)
     {
-        return sprintf('<input type="checkbox" name="bulk-levels-id[]" value="%s" />', $item->id);
+        return sprintf('<input type="checkbox" name="bulk-comm-ids[]" value="%s" />', $item->id);
     }
 
     public function no_items()
     {
         _e('No communications found.', 'wpms');
+    }
+
+    protected function bulk_actions($which = '')
+    {
+        if (is_null($this->_actions)) {
+            $this->_actions = $this->get_bulk_actions();
+        }
+
+        if (empty($this->_actions)) {
+            return;
+        }
+
+        echo '<label for="bulk-action-selector-' . esc_attr($which) . '" class="screen-reader-text">' . __('Select bulk action') . '</label>';
+        echo "<select name='bulk-action' id='bulk-action-selector-" . esc_attr($which) . "'>";
+        echo '<option value="-1">' . __('Bulk actions') . "</option>";
+
+        foreach ($this->_actions as $key => $value) {
+            if (is_array($value)) {
+                echo "<optgroup label='" . esc_attr($key) . "'>";
+
+                foreach ($value as $name => $title) {
+                    $class = ('edit' === $name) ? ' class="hide-if-no-js"' : '';
+
+                    echo "<option value='" . esc_attr($name) . "' $class>$title</option>";
+                }
+                echo "</optgroup>";
+            }
+            else {
+                $class = ('edit' === $key) ? ' class="hide-if-no-js"' : '';
+
+                echo '<option value="' . esc_attr($key) . '"' . $class . '>' . $value . "</option>";
+            }
+        }
+
+        echo "</select>";
+
+        submit_button(__('Apply'), 'action', $this->action_hook, false);
     }
 }

@@ -7,6 +7,7 @@
 
 namespace WPMembership\modules;
 
+use WPS\core\Actions;
 use WPS\core\Graphic;
 use WPS\modules\Module;
 
@@ -18,7 +19,7 @@ class Mod_History extends Module
 
     protected string $context = 'wpms';
 
-    public function render_admin_page(): void
+    public function render_sub_modules(): void
     {
         ?>
         <section class="wps-wrap">
@@ -52,7 +53,6 @@ class Mod_History extends Module
             <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
                 <?php $table->display(); ?>
-                <?php Graphic::nonce_field($this->action_hook); ?>
             </form>
         </block>
         <?php
