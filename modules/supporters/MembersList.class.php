@@ -18,6 +18,8 @@ class MembersList extends \WP_List_Table
 {
     private string $action_hook;
 
+    private string $action_page_hook;
+
     public function __construct($args = array())
     {
         $this->modes = array(
@@ -25,6 +27,7 @@ class MembersList extends \WP_List_Table
         );
 
         $this->action_hook = $args['action_hook'] ?? '';
+        $this->action_page_hook = "$this->action_hook-page";
 
         parent::__construct(
             array(
@@ -40,23 +43,19 @@ class MembersList extends \WP_List_Table
     {
         $subscription = wpms_get_user_subscription($user);
 
-        $level_title = $subscription ? wpms_get_level($subscription->level_id)->title : __('None', 'wpms');
+        $level_title = $subscription->get_level()->title ?: __('None', 'wpms');
 
         $output = "<strong>$level_title</strong>";
 
         $row_actions = array();
 
-        if ($subscription) {
-
-            if ($subscription->level_id) {
-                $row_actions[] = "<span class='inline delete'><a href='" . Actions::get_url($this->action_hook, 'drop') . "&user_id=$user->ID" . "'>" . __('Drop', 'wpms') . "</a></span>";
-            }
-            else {
-                $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'add') . "&sub_id=$subscription->id" . "'>" . __('Add', 'wpms') . "</a></span>";
-            }
+        if ($subscription->level_id) {
+            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'edit') . "&user_id=$user->ID" . "'>" . __('Edit', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'renew_sub') . "&user_id=$user->ID" . "'>" . __('Renew', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline delete'><a href='" . Actions::get_url($this->action_hook, 'drop_sub') . "&user_id=$user->ID" . "'>" . __('Drop', 'wpms') . "</a></span>";
         }
         else {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'add') . "&sub_id=0" . "'>" . __('Add', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'add') . "&user_id=$user->ID" . "'>" . __('Add', 'wpms') . "</a></span>";
         }
 
         $output .= '<br><div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
@@ -189,7 +188,10 @@ class MembersList extends \WP_List_Table
                 break;
 
             case 'expire':
-                $return = "<span>" . (wpms_get_user_subscription($item->ID)->expirydate ?? __('No', 'wpms')) . "</span>";
+                if ($expire = wpms_get_user_subscription($item->ID)->expirydate) {
+                    $expire = date("Y-m-d H:i", $expire);
+                }
+                $return = "<span>" . ($expire ?: __('No', 'wpms')) . "</span>";
                 break;
 
             case 'renew_count':
@@ -287,7 +289,6 @@ class MembersList extends \WP_List_Table
     public function get_columns()
     {
         return array(
-            'cb'           => '<input type="checkbox">',
             'username'     => __('Username', 'wpms'),
             'user_name'    => __('Name', 'wpms'),
             'email'        => __('E-mail', 'wpms'),
@@ -303,19 +304,6 @@ class MembersList extends \WP_List_Table
         return array(
             'expire' => array('expire', 'desc'),
         );
-    }
-
-    public function get_bulk_actions()
-    {
-        return array(
-            'subscriptions' => __('Subscriptions', 'wpms'),
-            'drop'          => __('Drop', 'wpms')
-        );
-    }
-
-    function column_cb($item)
-    {
-        return sprintf('<input type="checkbox" name="bulk-users-id[]" value="%s" />', $item->ID);
     }
 
     public function no_items()

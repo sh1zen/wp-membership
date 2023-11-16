@@ -30,9 +30,6 @@ class Mod_Levels extends Module
 
             switch ($action) {
 
-                case 'edit':
-                    return;
-
                 case 'update':
                 case 'add_new':
                     $request = $_REQUEST['new_level'];
@@ -43,12 +40,12 @@ class Mod_Levels extends Module
                     $query->insert(['title' => $title]);
                     $query->insert(['active' => isset($request['active']) ? '1' : '0']);
                     $query->insert(['slug' => wps_generate_slug($title)]);
-                    $query->insert(['duration' => (absint($request['duration.unit'] ?: 0)) * (absint($request['duration.digit'] ?? 0) ?: YEAR_IN_SECONDS)]);
+                    $query->insert(['duration' => (absint($request['duration.unit'] ?: 0)) * (absint($request['duration.digit'] ?? 0)) ?: YEAR_IN_SECONDS]);
                     $query->insert(['type' => sanitize_text_field($request['type'] ?: 'finite')]);
 
-                if ($action == 'update') {
-                    $query->where(['id' => $request['level_id']]);
-                }
+                    if ($action == 'update') {
+                        $query->where(['id' => $request['level_id']]);
+                    }
 
                     $response = $query->query();
                     break;
@@ -103,7 +100,8 @@ class Mod_Levels extends Module
                 $response ? 'success' : 'warning',
                 $response ? __('Action was correctly executed', $this->context) : __('Action execution failed', $this->context)
             );
-        });
+
+        }, false, true);
     }
 
     public function render_sub_modules(): void
@@ -113,7 +111,7 @@ class Mod_Levels extends Module
             <block class="wps">
                 <section class='wps-header'><h1><?php _e('Subscription plans', 'wpms'); ?></h1></section>
                 <?php
-                if (Actions::get_request($this->action_hook) === 'edit') {
+                if (Actions::get_request($this->action_hook_page) === 'edit') {
                     echo $this->render_edit();
                 }
                 else {

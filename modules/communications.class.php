@@ -37,8 +37,8 @@ class Mod_Communications extends Module
                 case 'edit':
                     return;
 
-                case 'update':
-                case 'add_new':
+                case 'update_comm':
+                case 'add_new_comm':
                     $request = $_REQUEST['new_comm'];
 
                     $query->insert(['active' => isset($request['active']) ? '1' : '0']);
@@ -48,7 +48,7 @@ class Mod_Communications extends Module
                     $query->insert(['event' => $request['event'] ?: 'signup']);
                     $query->insert(['timegap' => (absint($request['time.unit'] ?: 0)) * (absint($request['time.digit'] ?: 0))]);
 
-                    if ($action == 'update') {
+                    if ($action == 'update_comm') {
                         $query->where(['id' => $request['comm_id']]);
                     }
 
@@ -248,11 +248,11 @@ class Mod_Communications extends Module
             <row class="wps-custom-action wps-row">
                 <?php
                 if (isset($defaults['id']) and $defaults['id']) {
-                    echo Actions::get_action_button($this->action_hook, 'update', __('Update', 'wpms'), 'button-primary');
+                    echo Actions::get_action_button($this->action_hook, 'update_comm', __('Update', 'wpms'), 'button-primary');
                     echo "<input type='hidden' name='new_comm[comm_id]' value='" . esc_attr($defaults['id']) . "'>";
                 }
                 else {
-                    echo Actions::get_action_button($this->action_hook, 'add_new', __('Add new', 'wpms'), 'button-primary');
+                    echo Actions::get_action_button($this->action_hook, 'add_new_comm', __('Add new', 'wpms'), 'button-primary');
                 }
                 ?>
             </row>

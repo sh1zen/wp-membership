@@ -18,6 +18,7 @@ use WPS\core\UtilEnv;
 class LevelsList extends \WP_List_Table
 {
     private string $action_hook;
+    private string $action_page_hook;
 
     public function __construct($args = array())
     {
@@ -26,6 +27,7 @@ class LevelsList extends \WP_List_Table
         );
 
         $this->action_hook = $args['action_hook'] ?? '';
+        $this->action_page_hook = "$this->action_hook-page";
 
         parent::__construct(
             array(
@@ -39,7 +41,7 @@ class LevelsList extends \WP_List_Table
 
     public function column_title($item)
     {
-        $edit_link = Actions::get_url($this->action_hook, 'edit') . "&level_id=$item->id";
+        $edit_link = Actions::get_url($this->action_page_hook, 'edit') . "&level_id=$item->id";
 
         $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . esc_html($item->title) . '</a></strong>';
 

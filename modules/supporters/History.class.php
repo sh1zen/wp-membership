@@ -93,7 +93,7 @@ class History extends \WP_List_Table
                 break;
 
             case 'time':
-                $return = '<span>' . esc_html($item->time ?? '') . '</span>';
+                $return = '<span>' . esc_html($item->timestamp ?? '') . '</span>';
                 break;
 
             default:
