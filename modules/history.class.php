@@ -11,7 +11,7 @@ use WPS\core\Actions;
 use WPS\core\Graphic;
 use WPS\modules\Module;
 
-use WPMembership\modules\supporters\History;
+use WPMembership\modules\supporters\HistoryList;
 
 class Mod_History extends Module
 {
@@ -43,9 +43,9 @@ class Mod_History extends Module
     public function render_list(): string
     {
         ob_start();
-        require_once WPMS_SUPPORTERS . 'History.class.php';
+        require_once WPMS_SUPPORTERS . 'HistoryList.class.php';
 
-        $table = new History(['action_hook' => $this->action_hook]);
+        $table = new HistoryList(['action_hook' => $this->action_hook]);
 
         $table->prepare_items();
         ?>

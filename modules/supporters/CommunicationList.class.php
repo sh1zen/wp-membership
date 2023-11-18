@@ -12,7 +12,6 @@ if (!class_exists('WP_List_Table')) {
 }
 
 use WPS\core\Actions;
-use WPS\core\Graphic;
 use WPS\core\Query;
 use WPS\core\StringHelper;
 use WPS\core\UtilEnv;
@@ -21,6 +20,8 @@ class CommunicationList extends \WP_List_Table
 {
     private string $action_hook;
 
+    private string $action_page_hook;
+
     public function __construct($args = array())
     {
         $this->modes = array(
@@ -28,6 +29,7 @@ class CommunicationList extends \WP_List_Table
         );
 
         $this->action_hook = $args['action_hook'] ?? '';
+        $this->action_page_hook = "$this->action_hook-page";
 
         parent::__construct(
             array(
@@ -41,7 +43,7 @@ class CommunicationList extends \WP_List_Table
 
     public function column_subject($item)
     {
-        $edit_link = Actions::get_url($this->action_hook, 'edit') . "&comm_id=$item->id";
+        $edit_link = Actions::get_url($this->action_page_hook, 'edit') . "&comm_id=$item->id";
 
         $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . esc_html($item->subject) . '</a></strong>';
 
@@ -152,11 +154,11 @@ class CommunicationList extends \WP_List_Table
         switch ($column_name) {
 
             case 'level_name':
-                $return = "<span>" . (wpms_get_level($item->level_id)->title ?? __('All', 'wpms')) . "</span>";
+                $return = "<span>" . (wpms_level_get($item->level_id)->title ?: __('All', 'wpms')) . "</span>";
                 break;
 
             case 'message':
-                $return = '<span>' . esc_html(StringHelper::truncate($item->message ?? '', 100, '...')) . '</span>';
+                $return = '<span>' . esc_html(StringHelper::truncate($item->message ?: '', 100, '...')) . '</span>';
                 break;
 
             case 'status':
@@ -170,10 +172,12 @@ class CommunicationList extends \WP_List_Table
                 }
 
                 $return .= ' ' . match ($item->event) {
-                        'signup' => __('After Sign Up', 'wpms'),
-                        'join' => __('After Join Subscription', 'wpms'),
-                        'before' => __('Before Subscription Expire', 'wpms'),
-                        'after' => __('After Subscription Expire', 'wpms'),
+                        'signup' => __("Sign Up", 'wpms'),
+                        'before_expire' => __("Before Subscription Expire", 'wpms'),
+                        'after_expire' => __("After Subscription Expire", 'wpms'),
+                        'leave' => __("User Leave Membership", 'wpms'),
+                        'drop' => __("Membership Drop", 'wpms'),
+                        'join' => __("Join Subscription", 'wpms'),
                         default => '',
                     };
 

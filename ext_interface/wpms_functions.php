@@ -10,10 +10,10 @@ use WPS\core\Query;
 require_once __DIR__ . '/interfaces/MembershipLevel.class.php';
 require_once __DIR__ . '/interfaces/MembershipSubscription.class.php';
 
-function wpms_get_level($level, $by = 'id'): MembershipLevel
+function wpms_level_get($level, $by = 'id'): MembershipLevel
 {
     if (is_object($level)) {
-        return wpms_get_level($level->id ?? 0, 'id');
+        return wpms_level_get($level->id ?? 0, 'id');
     }
 
     if ($cache = wps('wpms')->cache->get($by . $level, 'level')) {
@@ -34,7 +34,7 @@ function wpms_get_level($level, $by = 'id'): MembershipLevel
 /**
  * @return MembershipLevel[]
  */
-function wpms_get_levels(): array
+function wpms_level_get_all(): array
 {
     if ($levels = wps('wpms')->cache->get('all', 'level')) {
         return $levels;
@@ -51,7 +51,7 @@ function wpms_get_levels(): array
     return $levels;
 }
 
-function wpms_get_user_subscription($user): ?MembershipSubscription
+function wpms_user_get_subscription($user): ?MembershipSubscription
 {
     $user = wps_get_user($user);
 
@@ -74,7 +74,7 @@ function wpms_get_user_subscription($user): ?MembershipSubscription
     return $sub;
 }
 
-function wpms_update_register($user, $level_id, $action, $paid = 0): bool
+function wpms_register_update($user, $level_id, $action, $paid = 0): bool
 {
     if (!$user = wps_get_user($user)) {
         return false;
@@ -89,7 +89,7 @@ function wpms_update_register($user, $level_id, $action, $paid = 0): bool
     return (bool)$historyQuery->query();
 }
 
-function wpms_update_register_update_field($user, $level_id, $field): bool
+function wpms_register_update_field($user, $level_id, $field): bool
 {
     if (!$user = wps_get_user($user)) {
         return false;
@@ -102,7 +102,7 @@ function wpms_update_register_update_field($user, $level_id, $field): bool
     return (bool)$historyQuery->query();
 }
 
-function wpms_get_pays($user, $last = false): int
+function wpms_user_get_pays($user, $last = false): int
 {
     if (!$user = wps_get_user($user)) {
         return 0;
@@ -120,7 +120,7 @@ function wpms_get_pays($user, $last = false): int
     return (int)$historyQuery->query(true) ?: 0;
 }
 
-function wpms_update_subscription($user, $level_id, $paid = 0): bool
+function wpms_subscription_update($user, $level_id, $paid = 0): bool
 {
     if (!$user = wps_get_user($user)) {
         return false;
@@ -132,13 +132,13 @@ function wpms_update_subscription($user, $level_id, $paid = 0): bool
     }
 
     // check if new level_id exist
-    if (!($level = wpms_get_level($level_id, 'id'))->id) {
+    if (!($level = wpms_level_get($level_id, 'id'))->id) {
         return false;
     }
 
     $res = true;
 
-    $oldSubscription = wpms_get_user_subscription($user);
+    $oldSubscription = wpms_user_get_subscription($user);
 
     $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
 
@@ -150,7 +150,7 @@ function wpms_update_subscription($user, $level_id, $paid = 0): bool
 
     if ($oldSubscription->id) {
         $query->where(['user_id' => $user->ID]);
-        $res &= wpms_update_register($user, $oldSubscription->level_id, 'leave');
+        $res &= wpms_register_update($user, $oldSubscription->level_id, 'leave');
     }
     else {
         $query->insert(['user_id' => $user->ID]);
@@ -158,10 +158,10 @@ function wpms_update_subscription($user, $level_id, $paid = 0): bool
 
     if ($oldSubscription->level_id !== $level->id) {
         $res &= $query->query();
-        $res &= wpms_update_register($user, $level_id, 'join', $paid);
+        $res &= wpms_register_update($user, $level_id, 'join', $paid);
     }
     else {
-        $res &= wpms_update_register_update_field($user, $level_id, ['paid' => $paid]);
+        $res &= wpms_register_update_field($user, $level_id, ['paid' => $paid]);
     }
 
     if ($res) {
@@ -176,13 +176,13 @@ function wpms_update_subscription($user, $level_id, $paid = 0): bool
     return (bool)$res;
 }
 
-function wpms_renew_subscription($user): bool
+function wpms_subscription_renew($user): bool
 {
     if (!$user = wps_get_user($user)) {
         return false;
     }
 
-    $level = wpms_get_user_subscription($user)->get_level();
+    $level = wpms_user_get_subscription($user)->get_level();
 
     if (!$level->id) {
         return false;
@@ -195,8 +195,8 @@ function wpms_renew_subscription($user): bool
 
     $res = $query->query();
 
-    $res &= wpms_update_register($user, $level->id, 'leave');
-    $res &= wpms_update_register($user, $level->id, 'join', wpms_get_pays($user, true));
+    $res &= wpms_register_update($user, $level->id, 'leave');
+    $res &= wpms_register_update($user, $level->id, 'join', wpms_user_get_pays($user, true));
 
     if ($res) {
         $query->commit();
@@ -212,7 +212,7 @@ function wpms_renew_subscription($user): bool
 
 function wpms_membership_drop($user)
 {
-    $sub = wpms_get_user_subscription($user);
+    $sub = wpms_user_get_subscription($user);
 
     if (!$sub or !$sub->id) {
         return false;
@@ -220,10 +220,19 @@ function wpms_membership_drop($user)
 
     $user = wps_get_user($user);
 
-    $res = Query::getInstance()->delete(['user_id' => $user->ID], WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->query();
+    $query = Query::getInstance()->begin_transaction();
+
+    $res = $query->delete(['user_id' => $user->ID], WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->query();
 
     if ($res) {
-        wpms_update_register($user, $sub->level_id, 'leave');
+        $res &= wpms_register_update($user, $sub->level_id, 'leave');
+    }
+
+    if ($res) {
+        $query->commit();
+    }
+    else {
+        $query->rollback();
     }
 
     wps('wpms')->cache->delete($user->ID, 'user_subscription');
@@ -231,20 +240,56 @@ function wpms_membership_drop($user)
     return $res ? $sub->level_id : false;
 }
 
-function wpms_send_message($user, $comm_id)
+/**
+ * $context = leave/expired/join/signup
+ */
+function wpms_user_notify($user, $context): bool
 {
-    $user = wps_get_user($user);
-
-    if (!$user) {
+    if (!$user = wps_get_user($user)) {
         return false;
     }
 
-    $comm = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS)->where(['id' => $comm_id])->query(true);
+    $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS);
 
-    if (!$comm) {
-        return false;
+    if (is_numeric($context)) {
+        $communications = $query->where(['id' => $context])->query();
+    }
+    else {
+
+        $subscription = wpms_user_get_subscription($user);
+
+        $query->where(['active' => '1'])->where([['level_id' => $subscription->level_id], ['level_id' => 0]], 'OR');
+
+        switch ($context) {
+            case 'expired':
+            case 'after_expire':
+                $query->where(['event' => 'after_expire']);
+                break;
+
+            case 'before_expire':
+                $query->where(['event' => 'before_expire'])->where(['timegap' => $subscription->time_left(), 'compare' => '<']);
+                break;
+
+            case 'leave':
+            case 'drop':
+            case 'join':
+            case 'signup':
+                $query->where(['event' => $context]);
+                break;
+
+            default:
+                return false;
+        }
+
+        $communications = $query->query();
     }
 
-    // todo add text replacer tags
-    return wp_mail($user->user_email, $comm->subject, $comm->message);
+    $res = true;
+
+    foreach ($communications as $comm) {
+        // todo add text replacer tags
+        $res &= wp_mail($user->user_email, $comm->subject, $comm->message);
+    }
+
+    return (bool)$res;
 }

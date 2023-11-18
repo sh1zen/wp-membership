@@ -40,12 +40,10 @@ if (!defined('WPS_FRAMEWORK')) {
 wps(
     'wpms',
     [
-        'path'         => WPMS_MODULES,
-        'table_name'   => "wpms", // todo maybe remove table wpms
+        'modules_path' => WPMS_MODULES,
     ],
     [
         'cache'         => true,
-        'settings'      => true,
         'cron'          => true,
         'moduleHandler' => true,
     ]

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: wpms-translation\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-"
 "optimizer/\n"
-"POT-Creation-Date: 2023-11-13 23:31+0100\n"
+"POT-Creation-Date: 2023-11-16 19:25+0100\n"
 "PO-Revision-Date: 2020-05-13 02:34+0200\n"
 "Last-Translator: sh1zen\n"
 "Language-Team: sh1zen\n"
@@ -21,203 +21,284 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: languages\n"
 
-#: admin/PagesHandler.class.php:47
-msgid "WPMS Modules Options"
-msgstr ""
-
-#: admin/PagesHandler.class.php:47
-msgid "Modules"
-msgstr ""
-
-#: admin/PagesHandler.class.php:52
+#: admin/PagesHandler.class.php:46
 msgid "WPMS Settings"
 msgstr ""
 
-#: admin/PagesHandler.class.php:52 admin/PluginInit.class.php:245
+#: admin/PagesHandler.class.php:46 admin/PluginInit.class.php:247
 msgid "Settings"
 msgstr ""
 
-#: admin/PagesHandler.class.php:98
+#: admin/PagesHandler.class.php:86
 msgid "Settings Saved"
 msgstr ""
 
-#: admin/PagesHandler.class.php:99
+#: admin/PagesHandler.class.php:87
 msgid "Request fail"
 msgstr ""
 
-#: admin/PagesHandler.class.php:100
+#: admin/PagesHandler.class.php:88
 msgid "Request succeed"
 msgstr ""
 
-#: admin/PagesHandler.class.php:119
+#: admin/PagesHandler.class.php:107
 msgid "Modules:"
 msgstr ""
 
-#: admin/PagesHandler.class.php:122
+#: admin/PagesHandler.class.php:110
 msgid ""
 "This plugin uses modules, so you can disable non necessary one to not "
 "weigh down WordPress."
 msgstr ""
 
-#: admin/PagesHandler.class.php:126
+#: admin/PagesHandler.class.php:114
 msgid "Currently active:"
 msgstr ""
 
-#: admin/PagesHandler.class.php:127
+#: admin/PagesHandler.class.php:115
 #, php-format
 msgid "Manage modules: <a href=\"%s\">here</a>."
 msgstr ""
 
-#: admin/PagesHandler.class.php:128
+#: admin/PagesHandler.class.php:116
 #, php-format
 msgid "Configure them: <a href=\"%s\">here</a>."
 msgstr ""
 
-#: admin/PagesHandler.class.php:137
+#: admin/PagesHandler.class.php:125
 msgid "Support this project, buy me a coffee."
 msgstr ""
 
-#: admin/PagesHandler.class.php:152
+#: admin/PagesHandler.class.php:140
 msgid "Want to support in other ways?"
 msgstr ""
 
-#: admin/PagesHandler.class.php:155
+#: admin/PagesHandler.class.php:143
 msgid "Help me translating"
 msgstr ""
 
-#: admin/PagesHandler.class.php:158
+#: admin/PagesHandler.class.php:146
 msgid "Leave a review"
 msgstr ""
 
-#: admin/PagesHandler.class.php:164
+#: admin/PagesHandler.class.php:152
 msgid "Source code"
 msgstr ""
 
-#: admin/PagesHandler.class.php:167
+#: admin/PagesHandler.class.php:155
 msgid "About me"
 msgstr ""
 
-#: admin/PluginInit.class.php:226
+#: admin/PluginInit.class.php:228
 msgid "Buy me a beer"
 msgstr ""
 
-#: modules/communications.class.php:56
-#: modules/communications.class.php:114 modules/levels.class.php:53
-#: modules/levels.class.php:116 modules/settings.class.php:73
+#: modules/communications.class.php:111 modules/levels.class.php:101
+#: modules/members.class.php:96 modules/settings.class.php:73
 msgid "Action was correctly executed"
 msgstr ""
 
-#: modules/communications.class.php:59
-#: modules/communications.class.php:117 modules/levels.class.php:56
-#: modules/levels.class.php:119 modules/settings.class.php:76
+#: modules/communications.class.php:111 modules/levels.class.php:101
+#: modules/members.class.php:96 modules/settings.class.php:76
 msgid "Action execution failed"
 msgstr ""
 
-#: modules/communications.class.php:149 modules/levels.class.php:151
+#: modules/communications.class.php:123
+msgid "Communications"
+msgstr ""
+
+#: modules/communications.class.php:134 modules/history.class.php:33
+#: modules/levels.class.php:122 modules/members.class.php:116
 msgid "List"
 msgstr ""
 
-#: modules/communications.class.php:154 modules/levels.class.php:156
+#: modules/communications.class.php:139 modules/levels.class.php:127
 msgid "Add New"
 msgstr ""
 
-#: modules/communications.class.php:179
-#: modules/supporters/CommunicationList.class.php:220
-msgid "Subject"
+#: modules/communications.class.php:157
+msgid "Not valid Message ID was passed."
 msgstr ""
 
-#: modules/communications.class.php:180
-#: modules/supporters/CommunicationList.class.php:221
-msgid "Message"
-msgstr ""
-
-#: modules/communications.class.php:181
-#: modules/communications.class.php:182 modules/levels.class.php:177
-#: modules/supporters/LevelsList.class.php:275
-msgid "Duration"
-msgstr ""
-
-#: modules/communications.class.php:183 modules/levels.class.php:179
-msgid "Year"
-msgstr ""
-
-#: modules/communications.class.php:184 modules/levels.class.php:180
-msgid "Month"
-msgstr ""
-
-#: modules/communications.class.php:185 modules/levels.class.php:181
-msgid "Day"
-msgstr ""
-
-#: modules/communications.class.php:186 modules/levels.class.php:182
-msgid "Hour"
-msgstr ""
-
-#: modules/communications.class.php:187
-msgid "Minutes"
-msgstr ""
-
-#: modules/communications.class.php:189
-msgid "Event"
-msgstr ""
-
-#: modules/communications.class.php:190
+#: modules/communications.class.php:167
+#: modules/communications.class.php:234
 msgid "Sign Up"
 msgstr ""
 
-#: modules/communications.class.php:191
-msgid "Join Membership"
+#: modules/communications.class.php:168
+#: modules/communications.class.php:236
+#: modules/supporters/CommunicationList.class.php:177
+msgid "Before Subscription Expire"
 msgstr ""
 
-#: modules/communications.class.php:192
-msgid "Before Membership End"
+#: modules/communications.class.php:169
+#: modules/communications.class.php:237
+#: modules/supporters/CommunicationList.class.php:178
+msgid "After Subscription Expire"
 msgstr ""
 
-#: modules/communications.class.php:193
-msgid "After Membership End"
+#: modules/communications.class.php:170
+#: modules/communications.class.php:238
+msgid "User Leave Membership"
 msgstr ""
 
-#: modules/communications.class.php:195
+#: modules/communications.class.php:171
+#: modules/communications.class.php:239
+msgid "Membership Drop"
+msgstr ""
+
+#: modules/communications.class.php:172
+#: modules/communications.class.php:232
+#: modules/communications.class.php:235
+msgid "Join Subscription"
+msgstr ""
+
+#: modules/communications.class.php:175
+#: modules/communications.class.php:188
+#: modules/communications.class.php:224
+#: modules/communications.class.php:227 modules/levels.class.php:158
+#: modules/levels.class.php:165 modules/levels.class.php:198
+msgid "Day"
+msgstr ""
+
+#: modules/communications.class.php:186
+#: modules/communications.class.php:225 modules/levels.class.php:163
+#: modules/levels.class.php:195 modules/levels.class.php:196
+msgid "Year"
+msgstr ""
+
+#: modules/communications.class.php:187
+#: modules/communications.class.php:226 modules/levels.class.php:164
+#: modules/levels.class.php:197
+msgid "Month"
+msgstr ""
+
+#: modules/communications.class.php:189
+#: modules/communications.class.php:228 modules/levels.class.php:166
+#: modules/levels.class.php:199
+msgid "Hour"
+msgstr ""
+
+#: modules/communications.class.php:190
+#: modules/communications.class.php:229 modules/levels.class.php:167
+msgid "Minutes"
+msgstr ""
+
+#: modules/communications.class.php:221
+#: modules/supporters/CommunicationList.class.php:270
+msgid "Subject"
+msgstr ""
+
+#: modules/communications.class.php:222
+#: modules/supporters/CommunicationList.class.php:272
+msgid "Message"
+msgstr ""
+
+#: modules/communications.class.php:223
+msgid "Message Time"
+msgstr ""
+
+#: modules/communications.class.php:224
+msgid "Time Unit"
+msgstr ""
+
+#: modules/communications.class.php:231
+msgid "Event"
+msgstr ""
+
+#: modules/communications.class.php:242
 msgid "For Subscription"
 msgstr ""
 
-#: modules/communications.class.php:196 modules/levels.class.php:189
-#: modules/supporters/CommunicationList.class.php:223
+#: modules/communications.class.php:243
+#: modules/supporters/CommunicationList.class.php:157
+msgid "All"
+msgstr ""
+
+#: modules/communications.class.php:246 modules/levels.class.php:206
 msgid "Active"
 msgstr ""
 
-#: modules/communications.class.php:205 modules/levels.class.php:198
+#: modules/communications.class.php:256 modules/levels.class.php:217
+#: modules/members.class.php:179
+msgid "Update"
+msgstr ""
+
+#: modules/communications.class.php:260 modules/levels.class.php:221
 msgid "Add new"
 msgstr ""
 
-#: modules/levels.class.php:175
-#: modules/supporters/LevelsList.class.php:273
-msgid "Title"
+#: modules/history.class.php:27
+msgid "Subscriptions History"
 msgstr ""
 
-#: modules/levels.class.php:176
-msgid "Description"
+#: modules/levels.class.php:112
+msgid "Subscription plans"
 msgstr ""
 
-#: modules/levels.class.php:178
-msgid "Unit"
+#: modules/levels.class.php:145
+msgid "Not valid Level ID was passed."
 msgstr ""
 
-#: modules/levels.class.php:184
-#: modules/supporters/LevelsList.class.php:276
-msgid "Type"
-msgstr ""
-
-#: modules/levels.class.php:185
-msgid "Finite"
-msgstr ""
-
-#: modules/levels.class.php:186
+#: modules/levels.class.php:153 modules/levels.class.php:203
 msgid "Indefinite"
 msgstr ""
 
-#: modules/levels.class.php:187
+#: modules/levels.class.php:154 modules/levels.class.php:204
 msgid "Serial"
+msgstr ""
+
+#: modules/levels.class.php:155 modules/levels.class.php:201
+#: modules/levels.class.php:202
+msgid "Finite"
+msgstr ""
+
+#: modules/levels.class.php:192
+#: modules/supporters/LevelsList.class.php:274
+msgid "Title"
+msgstr ""
+
+#: modules/levels.class.php:193
+msgid "Description"
+msgstr ""
+
+#: modules/levels.class.php:194
+#: modules/supporters/LevelsList.class.php:276
+msgid "Duration"
+msgstr ""
+
+#: modules/levels.class.php:195
+msgid "Unit"
+msgstr ""
+
+#: modules/levels.class.php:201
+#: modules/supporters/LevelsList.class.php:277
+msgid "Type"
+msgstr ""
+
+#: modules/members.class.php:107
+msgid "Edit Members"
+msgstr ""
+
+#: modules/members.class.php:134
+msgid "Not valid User ID was passed."
+msgstr ""
+
+#: modules/members.class.php:141 modules/members.class.php:153
+#: modules/supporters/MembersList.class.php:46
+msgid "None"
+msgstr ""
+
+#: modules/members.class.php:164
+msgid "Add Subscription"
+msgstr ""
+
+#: modules/members.class.php:168
+msgid "Paid"
+msgstr ""
+
+#: modules/members.class.php:182
+msgid "Subscribe"
 msgstr ""
 
 #: modules/settings.class.php:93
@@ -236,112 +317,242 @@ msgstr ""
 msgid "Import Plugin options"
 msgstr ""
 
-#: modules/supporters/CommunicationList.class.php:24
-#: modules/supporters/LevelsList.class.php:25
+#: modules/supporters/CommunicationList.class.php:28
+#: modules/supporters/HistoryList.class.php:23
+#: modules/supporters/LevelsList.class.php:26
+#: modules/supporters/MembersList.class.php:26
 msgid "List view"
 msgstr ""
 
-#: modules/supporters/CommunicationList.class.php:29
-msgid "activity"
+#: modules/supporters/CommunicationList.class.php:36
+msgid "communication"
 msgstr ""
 
-#: modules/supporters/CommunicationList.class.php:30
-msgid "activities"
+#: modules/supporters/CommunicationList.class.php:37
+msgid "communications"
 msgstr ""
 
-#: modules/supporters/CommunicationList.class.php:40
-#: modules/supporters/LevelsList.class.php:68
-msgid "Search"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:78
-#: modules/supporters/LevelsList.class.php:111
-msgid "Filter"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:81
-msgid "View all messages"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:82
-msgid "View active Communications"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:83
-msgid "View inactive Communications"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:102
-#: modules/supporters/LevelsList.class.php:135
-msgid "Export File Format"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:109
-#: modules/supporters/LevelsList.class.php:142
-msgid "Export Data"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:218
-#: modules/supporters/LevelsList.class.php:272
-msgid "ID"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:219
-msgid "Level"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:222
-msgid "Period"
-msgstr ""
-
-#: modules/supporters/CommunicationList.class.php:237
-#: modules/supporters/LevelsList.class.php:306
-msgid "No communications found."
-msgstr ""
-
-#: modules/supporters/LevelsList.class.php:32
-msgid "level"
-msgstr ""
-
-#: modules/supporters/LevelsList.class.php:33
-msgid "levels"
-msgstr ""
-
-#: modules/supporters/LevelsList.class.php:48
+#: modules/supporters/CommunicationList.class.php:52
+#: modules/supporters/LevelsList.class.php:50
+#: modules/supporters/MembersList.class.php:53
+#: modules/supporters/MembersList.class.php:73
 msgid "Edit"
 msgstr ""
 
-#: modules/supporters/LevelsList.class.php:51
-#: modules/supporters/LevelsList.class.php:293
+#: modules/supporters/CommunicationList.class.php:55
+#: modules/supporters/CommunicationList.class.php:288
+#: modules/supporters/LevelsList.class.php:53
+#: modules/supporters/LevelsList.class.php:294
 msgid "Activate"
 msgstr ""
 
-#: modules/supporters/LevelsList.class.php:54
-#: modules/supporters/LevelsList.class.php:294
+#: modules/supporters/CommunicationList.class.php:58
+#: modules/supporters/CommunicationList.class.php:289
+#: modules/supporters/LevelsList.class.php:56
+#: modules/supporters/LevelsList.class.php:295
 msgid "Suspend"
 msgstr ""
 
-#: modules/supporters/LevelsList.class.php:57
-#: modules/supporters/LevelsList.class.php:295
+#: modules/supporters/CommunicationList.class.php:61
+msgid "Send Me"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:63
+#: modules/supporters/CommunicationList.class.php:290
+#: modules/supporters/LevelsList.class.php:59
+#: modules/supporters/LevelsList.class.php:296
 msgid "Delete"
 msgstr ""
 
-#: modules/supporters/LevelsList.class.php:114
-msgid "View all Levels"
+#: modules/supporters/CommunicationList.class.php:73
+#: modules/supporters/LevelsList.class.php:69
+#: modules/supporters/MembersList.class.php:84
+msgid "Search"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:116
+#: modules/supporters/LevelsList.class.php:112
+#: modules/supporters/MembersList.class.php:135
+#: modules/supporters/MembersList.class.php:148
+msgid "Filter"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:119
+msgid "View All Messages"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:120
+msgid "View Active Communications"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:121
+msgid "View Inactive Communications"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:140
+#: modules/supporters/HistoryList.class.php:71
+#: modules/supporters/LevelsList.class.php:136
+#: modules/supporters/MembersList.class.php:166
+msgid "Export File Format"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:147
+#: modules/supporters/HistoryList.class.php:78
+#: modules/supporters/LevelsList.class.php:143
+#: modules/supporters/MembersList.class.php:173
+msgid "Export Data"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:175
+msgid "After Sign Up"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:176
+msgid "After Join Subscription"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:271
+#: modules/supporters/HistoryList.class.php:149
+#: modules/supporters/MembersList.class.php:296
+msgid "Subscription"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:273
+msgid "Period"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:274
+#: modules/supporters/LevelsList.class.php:278
+msgid "Status"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:301
+msgid "No communications found."
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:314
+#: modules/supporters/LevelsList.class.php:320
+#: modules/supporters/MembersList.class.php:324
+msgid "Select bulk action"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:316
+#: modules/supporters/LevelsList.class.php:322
+#: modules/supporters/MembersList.class.php:326
+msgid "Bulk actions"
+msgstr ""
+
+#: modules/supporters/CommunicationList.class.php:338
+#: modules/supporters/LevelsList.class.php:344
+#: modules/supporters/MembersList.class.php:348
+msgid "Apply"
+msgstr ""
+
+#: modules/supporters/HistoryList.class.php:30
+#: modules/supporters/HistoryList.class.php:31
+msgid "history"
+msgstr ""
+
+#: modules/supporters/HistoryList.class.php:148
+msgid "User"
+msgstr ""
+
+#: modules/supporters/HistoryList.class.php:150
+msgid "Action"
+msgstr ""
+
+#: modules/supporters/HistoryList.class.php:151
+msgid "Time"
+msgstr ""
+
+#: modules/supporters/HistoryList.class.php:157
+msgid "No subscriptions found."
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:34
+msgid "level"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:35
+msgid "levels"
 msgstr ""
 
 #: modules/supporters/LevelsList.class.php:115
-msgid "View active Levels"
+msgid "View all Levels"
 msgstr ""
 
 #: modules/supporters/LevelsList.class.php:116
+msgid "View active Levels"
+msgstr ""
+
+#: modules/supporters/LevelsList.class.php:117
 msgid "View inactive Levels"
 msgstr ""
 
-#: modules/supporters/LevelsList.class.php:274
+#: modules/supporters/LevelsList.class.php:279
 msgid "Count"
 msgstr ""
 
-#: modules/supporters/LevelsList.class.php:277
-msgid "Status"
+#: modules/supporters/LevelsList.class.php:307
+msgid "No Subscriptions Plan Found."
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:34
+msgid "member"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:35
+msgid "members"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:54
+msgid "Renew"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:55
+msgid "Drop"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:58
+msgid "Add"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:128
+msgid "Filter by subscription"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:129
+msgid "View Inactive Users"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:142
+msgid "Filter by User Role"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:195
+msgid "No"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:293
+msgid "Username"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:294
+msgid "Name"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:295
+msgid "E-mail"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:297
+msgid "Expire"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:298
+msgid "Renew / Payments"
+msgstr ""
+
+#: modules/supporters/MembersList.class.php:311
+msgid "No Users found."
 msgstr ""

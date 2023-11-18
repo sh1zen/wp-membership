@@ -11,6 +11,7 @@ use WPS\core\Actions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Query;
+use WPS\core\UtilEnv;
 use WPS\modules\Module;
 
 use WPMembership\modules\supporters\MembersList;
@@ -23,17 +24,30 @@ class Mod_Members extends Module
 
     public function actions(): void
     {
+        Actions::schedule("wpms-members-check-expired", HOUR_IN_SECONDS, function () {
+
+            $query = Query::getInstance()->select('user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+            $users = $query->where(['expirydate' => wps_time('mysql'), 'compare' => '<'])->query(false, true);
+
+            foreach ($users as $user_id) {
+
+                $user = wps_get_user($user_id);
+
+                wpms_membership_drop($user);
+                wpms_user_notify($user, 'expired');
+
+                UtilEnv::safe_time_limit(10, 60);
+            }
+        });
+
         Actions::request($this->action_hook, function ($action) {
-
-            $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_LEVELS);
-
 
             switch ($action) {
 
                 case 'update_sub':
                 case 'add_new_sub':
                     $request = $_REQUEST['membership'];
-                    $response = wpms_update_subscription($request['user_id'], $request['level_id'], $request['paid']);
+                    $response = wpms_subscription_update($request['user_id'], $request['level_id'], $request['paid']);
                     break;
 
                 case 'drop_sub':
@@ -41,7 +55,7 @@ class Mod_Members extends Module
                     break;
 
                 case 'renew_sub':
-                    $response = wpms_renew_subscription($_REQUEST['user_id']);
+                    $response = wpms_subscription_renew($_REQUEST['user_id']);
                     break;
 
                 case 'export':
@@ -64,7 +78,14 @@ class Mod_Members extends Module
                         if (strtolower($_REQUEST['bulk-action']) == 'drop') {
                             $response = true;
                             foreach ($user_ids as $user_id) {
-                                $response &= wpms_membership_drop($user_id);
+                                $user = wps_get_user($user_id);
+                                $response &= wpms_membership_drop($user);
+                                if ($response) {
+                                    wpms_user_notify($user, 'drop');
+                                }
+                                else {
+                                    break;
+                                }
                             }
                         }
                     }
@@ -113,7 +134,7 @@ class Mod_Members extends Module
             return '<strong>' . __('Not valid User ID was passed.', 'wpms') . '</strong>';
         }
 
-        $current_sub = wpms_get_user_subscription($user);
+        $current_sub = wpms_user_get_subscription($user);
 
         $defaults = [
             'level_id' => $current_sub->level_id,
@@ -130,7 +151,7 @@ class Mod_Members extends Module
             <?php
 
             $subscriptions = [__("None", 'wpms') => 0];
-            foreach (wpms_get_levels() as $level) {
+            foreach (wpms_level_get_all() as $level) {
                 $subscriptions[ucwords($level->title)] = $level->id;
 
                 if ($level->id === $defaults['level_id']) {

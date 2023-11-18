@@ -30,11 +30,16 @@ class MembershipSubscription
 
     public function get_level(): ?MembershipLevel
     {
-        return wpms_get_level($this->level_id);
+        return wpms_level_get($this->level_id);
     }
 
     public function get_user(): ?WP_User
     {
         return wps_get_user($this->user_id);
+    }
+
+    public function time_left()
+    {
+        return max($this->expirydate - wps_time('timestamp'), 0);
     }
 }

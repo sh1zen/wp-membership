@@ -41,7 +41,7 @@ class MembersList extends \WP_List_Table
 
     public function column_subscription($user)
     {
-        $subscription = wpms_get_user_subscription($user);
+        $subscription = wpms_user_get_subscription($user);
 
         $level_title = $subscription->get_level()->title ?: __('None', 'wpms');
 
@@ -67,7 +67,7 @@ class MembersList extends \WP_List_Table
     {
         $edit_link = admin_url('user-edit.php?user_id=' . $user->ID);
 
-        $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . esc_html($user->display_name) . '</a></strong>';
+        $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . ucwords(strtolower(esc_html($user->display_name))) . '</a></strong>';
 
         $row_actions = [
             "<span class='edit'><a href='$edit_link'>" . __('Edit', 'wpms') . "</a></span>"
@@ -127,7 +127,7 @@ class MembersList extends \WP_List_Table
         echo '<select name="filter_level">';
         printf('<option value="">%s</option>', __('Filter by subscription', 'wpms'));
         printf('<option value="0"%s>%s</option>', selected($_REQUEST['filter_level'] ?? '0', '0', false), __('View Inactive Users', 'wpms'));
-        foreach (wpms_get_levels() as $level) {
+        foreach (wpms_level_get_all() as $level) {
             printf('<option value="%s"%s>%s</option>', $level->id, selected($_REQUEST['filter_level'] ?? '', $level->id, false), ucwords($level->title));
         }
         echo '</select>';
@@ -180,7 +180,8 @@ class MembersList extends \WP_List_Table
         switch ($column_name) {
 
             case 'user_name':
-                $return = '<span>' . wps_get_user($item->ID)->first_name . ' ' . wps_get_user($item->ID)->last_name . '</span>';
+
+                $return = '<span>' . ucwords(strtolower(esc_html(wps_get_user($item->ID)->first_name . ' ' . wps_get_user($item->ID)->last_name))) . '</span>';
                 break;
 
             case 'email':
@@ -188,7 +189,7 @@ class MembersList extends \WP_List_Table
                 break;
 
             case 'expire':
-                if ($expire = wpms_get_user_subscription($item->ID)->expirydate) {
+                if ($expire = wpms_user_get_subscription($item->ID)->expirydate) {
                     $expire = date("Y-m-d H:i", $expire);
                 }
                 $return = "<span>" . ($expire ?: __('No', 'wpms')) . "</span>";
@@ -196,7 +197,7 @@ class MembersList extends \WP_List_Table
 
             case 'renew_count':
                 $count = Query::getInstance()->select('COUNT(*)', WP_MEMBERSHIP_TABLE_HISTORY)->where(['user_id' => $item->ID, 'action' => 'join'])->query(true);
-                $return = "<span>$count</span>";
+                $return = "<span>$count / " . wpms_user_get_pays($item) . " € </span>";
                 break;
 
             default:
@@ -294,8 +295,7 @@ class MembersList extends \WP_List_Table
             'email'        => __('E-mail', 'wpms'),
             'subscription' => __('Subscription', 'wpms'),
             'expire'       => __('Expire', 'wpms'),
-            'renew_count'  => __('Renew Count', 'wpms'),
-            //'paid'         => __('Paid', 'wpms'),
+            'renew_count'  => __('Renew / Payments', 'wpms'),
         );
     }
 

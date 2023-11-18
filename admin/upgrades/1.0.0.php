@@ -41,7 +41,6 @@ WPS\core\UtilEnv::db_create(
 );
 $wpdb->query("ALTER TABLE " . WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS . " ADD UNIQUE `idx_user_id` (`user_id`) USING BTREE;");
 
-
 WPS\core\UtilEnv::db_create(
     WP_MEMBERSHIP_TABLE_COMMUNICATIONS,
     [
@@ -51,7 +50,7 @@ WPS\core\UtilEnv::db_create(
             "subject"  => "VARCHAR(255)",
             "message"  => "LONGTEXT",
             "timegap"  => "INT NOT NULL DEFAULT 0", // how many seconds must pass before sending the message
-            "event"    => "VARCHAR(255) NOT NULL", // before, after, join, signup
+            "event"    => "VARCHAR(255) NOT NULL", // before_expire, after_expire, join, signup, leave, drop
             "active"   => "INT NOT NULL DEFAULT 0",
         ],
         "primary_key" => "id"

@@ -24,8 +24,15 @@ class Mod_Communications extends Module
 
     public function actions(): void
     {
-        Actions::schedule($this->hash, MINUTE_IN_SECONDS * 30, function () {
-            wps_log('cron-execution: Mod_Communications');
+        Actions::schedule("wpms-communications-check", MINUTE_IN_SECONDS * 30, function () {
+
+            $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS)->where(['active' => '1']);
+            $communications = $query->query();
+
+            foreach ($communications as $communication) {
+
+            }
+
         });
 
         Actions::request($this->action_hook, function ($action) {
@@ -33,9 +40,6 @@ class Mod_Communications extends Module
             $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS);
 
             switch ($action) {
-
-                case 'edit':
-                    return;
 
                 case 'update_comm':
                 case 'add_new_comm':
@@ -69,7 +73,7 @@ class Mod_Communications extends Module
                     break;
 
                 case 'sendme':
-                    $response = wpms_send_message(wps_utils()->cu, $_REQUEST['comm_id']);
+                    $response = wpms_user_notify(wps_utils()->cu, $_REQUEST['comm_id']);
                     break;
 
                 case 'export':
@@ -110,7 +114,7 @@ class Mod_Communications extends Module
                 $response ? __('Action was correctly executed', $this->context) : __('Action execution failed', $this->context)
             );
 
-        });
+        }, false, true);
     }
 
     public function render_sub_modules(): void
@@ -122,7 +126,7 @@ class Mod_Communications extends Module
                 <section class='wps-header'><h1><?php _e('Communications', 'wpms'); ?></h1></section>
                 <?php
 
-                if (Actions::get_request($this->action_hook) === 'edit') {
+                if (Actions::get_request($this->action_hook_page) === 'edit') {
                     echo $this->render_edit();
                 }
                 else {
@@ -164,15 +168,17 @@ class Mod_Communications extends Module
             'active'     => UtilEnv::to_boolean($comm->active),
             'event'      => match ($comm->event) {
                 'signup' => [__("Sign Up", 'wpms') => 'signup'],
-                'before' => [__("Before Subscription Expire", 'wpms') => 'before'],
-                'after' => [__("After Subscription Expire", 'wpms') => 'after'],
+                'before_expire' => [__("Before Subscription Expire", 'wpms') => 'before_expire'],
+                'after_expire' => [__("After Subscription Expire", 'wpms') => 'after_expire'],
+                'leave' => [__("User Leave Membership", 'wpms') => 'leave'],
+                'drop' => [__("Membership Drop", 'wpms') => 'drop'],
                 default => [__("Join Subscription", 'wpms') => 'join']
             },
             'time.digit' => 0,
             'time.unit'  => [__("Day", 'wpms') => DAY_IN_SECONDS]
         ];
 
-        foreach (wpms_get_levels() as $level) {
+        foreach (wpms_level_get_all() as $level) {
             if ($comm->level_id == $level->id) {
                 $comm_values['level_id'] = [ucwords($level->title) => $level->id];
                 break;
@@ -209,7 +215,7 @@ class Mod_Communications extends Module
 
             $subscriptions = ['All' => 0];
 
-            foreach (wpms_get_levels() as $level) {
+            foreach (wpms_level_get_all() as $level) {
                 $subscriptions[ucwords($level->title)] = $level->id;
             }
 
@@ -230,8 +236,10 @@ class Mod_Communications extends Module
                         'list'  => [
                             __("Sign Up", 'wpms')                    => 'signup',
                             __("Join Subscription", 'wpms')          => 'join',
-                            __("Before Subscription Expire", 'wpms') => 'before',
-                            __("After Subscription Expire", 'wpms')  => 'after'
+                            __("Before Subscription Expire", 'wpms') => 'before_expire',
+                            __("After Subscription Expire", 'wpms')  => 'before_expire',
+                            __("User Leave Membership", 'wpms')      => 'leave',
+                            __("Membership Drop", 'wpms')            => 'drop',
                         ]
                     ]),
                     $this->setting_field(__('For Subscription', 'wpms'), 'level_id', 'dropdown', [
@@ -281,9 +289,16 @@ class Mod_Communications extends Module
         return ob_get_clean();
     }
 
+    public function handle_register_communication($user_id): bool
+    {
+        return wpms_user_notify($user_id, 'signup');
+    }
+
     protected function init(): void
     {
         $this->path = __DIR__;
+
+        add_action('user_register', [$this, 'handle_register_communication'], 10, 1);
     }
 }
 
