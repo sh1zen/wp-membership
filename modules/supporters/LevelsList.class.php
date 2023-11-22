@@ -11,6 +11,7 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+use WPMembership\core\MembershipLevel;
 use WPS\core\Actions;
 use WPS\core\Query;
 use WPS\core\UtilEnv;
@@ -150,21 +151,20 @@ class LevelsList extends \WP_List_Table
         switch ($column_name) {
 
             case 'id':
-            case 'count':
-                $return = "<span>" . absint($item->count ?: 0) . "</span>";
+                $return = "<span>" . $item->id . "</span>";
                 break;
 
-            case 'message':
-                $return = '<span>' . esc_html($item->$column_name ?? '') . '</span>';
+            case 'count':
+                $return = "<span>" . $item->count() . "</span>";
                 break;
 
             case 'status':
-                $return = UtilEnv::to_boolean($item->active) ? '<span class="wps--green">Active</span>' : '<span class="wps--red">Suspended</span>';
+                $return = $item->active ? '<span class="wps--green">Active</span>' : '<span class="wps--red">Suspended</span>';
                 break;
 
             case 'duration':
                 $return = '';
-                foreach (UtilEnv::convertSecondsToDuration($item->duration) as $item => $value) {
+                foreach ($item->duration() as $item => $value) {
                     $return .= "$value $item ";
                 }
                 break;
@@ -193,10 +193,7 @@ class LevelsList extends \WP_List_Table
 
     public function get_items($use_limit = false)
     {
-        // get requested order and other filters from _wp_http_referer
-        parse_str(parse_url($_REQUEST['_wp_http_referer'] ?? '', PHP_URL_QUERY), $request);
-
-        $query = $this->parse_query($request)->output(ARRAY_A);
+        $query = $this->parse_query()->output(ARRAY_A);
 
         $offset = ($this->get_pagenum() - 1) * 25;
 
@@ -258,7 +255,9 @@ class LevelsList extends \WP_List_Table
 
         $total_items = $query->action('select')->columns('COUNT(*)')->query(true);
 
-        $this->items = $query->limit(25)->offset($offset)->columns('*')->recompile()->query();
+        foreach ($query->limit(25)->offset($offset)->columns('*')->recompile()->query() as $item){
+            $this->items[] = new MembershipLevel($item);
+        }
 
         $this->set_pagination_args(array(
             'total_items' => $total_items,
@@ -309,11 +308,9 @@ class LevelsList extends \WP_List_Table
 
     protected function bulk_actions($which = '')
     {
-        if (is_null($this->_actions)) {
-            $this->_actions = $this->get_bulk_actions();
-        }
+        $actions = $this->get_bulk_actions();
 
-        if (empty($this->_actions)) {
+        if (empty($actions)) {
             return;
         }
 
@@ -321,7 +318,7 @@ class LevelsList extends \WP_List_Table
         echo "<select name='bulk-action' id='bulk-action-selector-" . esc_attr($which) . "'>";
         echo '<option value="-1">' . __('Bulk actions') . "</option>";
 
-        foreach ($this->_actions as $key => $value) {
+        foreach ($actions as $key => $value) {
             if (is_array($value)) {
                 echo "<optgroup label='" . esc_attr($key) . "'>";
 

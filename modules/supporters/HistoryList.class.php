@@ -96,7 +96,7 @@ class HistoryList extends \WP_List_Table
                 break;
 
             case 'level':
-                $return = '<span>' . wpms_level_get($item->level_id)->title . '</span>';
+                $return = '<span>' . wpms_get_level($item->level_id)->title . '</span>';
                 break;
 
             case 'time':

@@ -20,21 +20,18 @@ const WPMS_MODULES = WPMS_ABSPATH . 'modules/';
 const WPMS_ADMIN = WPMS_ABSPATH . 'admin/';
 
 const WPMS_SUPPORTERS = WPMS_MODULES . 'supporters/';
-const WPMS_VENDORS = WPMS_ABSPATH . 'vendors/';
-
-// setup constants
-require_once WPMS_INCPATH . 'constants.php';
-
-// essential
-require_once WPMS_INCPATH . 'functions.php';
-
 
 // wps-framework commons
 if (!defined('WPS_FRAMEWORK')) {
-    if (!file_exists(WPMS_VENDORS . 'wps-framework/loader.php')) {
-        return;
+    if (defined('WPS_FRAMEWORK_SOURCE') and file_exists(WPS_FRAMEWORK_SOURCE . 'loader.php')) {
+        require_once WPS_FRAMEWORK_SOURCE . 'loader.php';
     }
-    require_once WPMS_VENDORS . 'wps-framework/loader.php';
+    else {
+        if (!file_exists(WPMS_ABSPATH . 'vendors/wps-framework/loader.php')) {
+            return;
+        }
+        require_once WPMS_ABSPATH . 'vendors/wps-framework/loader.php';
+    }
 }
 
 wps(
@@ -44,10 +41,14 @@ wps(
     ],
     [
         'cache'         => true,
-        'cron'          => true,
         'moduleHandler' => true,
     ]
 );
+
+// load workers
+require_once WPMS_INCPATH . 'constants.php';
+require_once WPMS_INCPATH . 'functions.php';
+require_once WPMS_INCPATH . 'cron.php';
 
 // initializer class
 require_once WPMS_ADMIN . 'PluginInit.class.php';
@@ -56,5 +57,3 @@ require_once WPMS_ADMIN . 'PluginInit.class.php';
  * Initialize the plugin.
  */
 WPMembership\core\PluginInit::Initialize();
-
-require_once WPMS_ABSPATH . 'ext_interface/wpms_functions.php';

@@ -11,43 +11,28 @@ use WPS\core\Actions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Query;
-use WPS\core\UtilEnv;
 use WPS\modules\Module;
 
 use WPMembership\modules\supporters\MembersList;
 
 class Mod_Members extends Module
 {
-    public array $scopes = array('admin-page', 'autoload');
+    public array $scopes = array('admin-page',  'admin');
 
     protected string $context = 'wpms';
 
     public function actions(): void
     {
-        Actions::schedule("wpms-members-check-expired", HOUR_IN_SECONDS, function () {
-
-            $query = Query::getInstance()->select('user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
-            $users = $query->where(['expirydate' => wps_time('mysql'), 'compare' => '<'])->query(false, true);
-
-            foreach ($users as $user_id) {
-
-                $user = wps_get_user($user_id);
-
-                wpms_membership_drop($user);
-                wpms_user_notify($user, 'expired');
-
-                UtilEnv::safe_time_limit(10, 60);
-            }
-        });
-
         Actions::request($this->action_hook, function ($action) {
+
+            $response = false;
 
             switch ($action) {
 
                 case 'update_sub':
                 case 'add_new_sub':
                     $request = $_REQUEST['membership'];
-                    $response = wpms_subscription_update($request['user_id'], $request['level_id'], $request['paid']);
+                    $response = wpms_membership_update($request['user_id'], $request['level_id'], $request['paid']);
                     break;
 
                 case 'drop_sub':
@@ -55,7 +40,7 @@ class Mod_Members extends Module
                     break;
 
                 case 'renew_sub':
-                    $response = wpms_subscription_renew($_REQUEST['user_id']);
+                    $response = wpms_membership_renew($_REQUEST['user_id']);
                     break;
 
                 case 'export':
@@ -70,7 +55,6 @@ class Mod_Members extends Module
                     break;
 
                 default:
-                    $response = false;
 
                     $user_ids = array_filter($_REQUEST['bulk-users-id'] ?? []);
 
@@ -151,7 +135,7 @@ class Mod_Members extends Module
             <?php
 
             $subscriptions = [__("None", 'wpms') => 0];
-            foreach (wpms_level_get_all() as $level) {
+            foreach (wpms_get_levels() as $level) {
                 $subscriptions[ucwords($level->title)] = $level->id;
 
                 if ($level->id === $defaults['level_id']) {

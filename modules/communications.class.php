@@ -18,23 +18,12 @@ use WPMembership\modules\supporters\CommunicationList;
 
 class Mod_Communications extends Module
 {
-    public array $scopes = array('autoload', 'admin-page');
+    public array $scopes = array('admin-page', 'admin');
 
     protected string $context = 'wpms';
 
     public function actions(): void
     {
-        Actions::schedule("wpms-communications-check", MINUTE_IN_SECONDS * 30, function () {
-
-            $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS)->where(['active' => '1']);
-            $communications = $query->query();
-
-            foreach ($communications as $communication) {
-
-            }
-
-        });
-
         Actions::request($this->action_hook, function ($action) {
 
             $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS);
@@ -50,7 +39,11 @@ class Mod_Communications extends Module
                     $query->insert(['subject' => sanitize_text_field($request['subject'] ?? '')]);
                     $query->insert(['message' => $request['message'] ?: '']);
                     $query->insert(['event' => $request['event'] ?: 'signup']);
-                    $query->insert(['timegap' => (absint($request['time.unit'] ?: 0)) * (absint($request['time.digit'] ?: 0))]);
+
+                    $query->insert(['timegap' => match ($request['event'] ?: 'signup') {
+                        'leave', 'drop', 'join', 'signup', 'after_expire' => 0,
+                        default => (absint($request['time.unit'] ?: 0)) * (absint($request['time.digit'] ?: 0)),
+                    }]);
 
                     if ($action == 'update_comm') {
                         $query->where(['id' => $request['comm_id']]);
@@ -178,7 +171,7 @@ class Mod_Communications extends Module
             'time.unit'  => [__("Day", 'wpms') => DAY_IN_SECONDS]
         ];
 
-        foreach (wpms_level_get_all() as $level) {
+        foreach (wpms_get_levels() as $level) {
             if ($comm->level_id == $level->id) {
                 $comm_values['level_id'] = [ucwords($level->title) => $level->id];
                 break;
@@ -215,7 +208,7 @@ class Mod_Communications extends Module
 
             $subscriptions = ['All' => 0];
 
-            foreach (wpms_level_get_all() as $level) {
+            foreach (wpms_get_levels() as $level) {
                 $subscriptions[ucwords($level->title)] = $level->id;
             }
 

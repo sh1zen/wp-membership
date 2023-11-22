@@ -1,12 +1,15 @@
 <?php
-
-use WPS\core\UtilEnv;
-
 /**
  * @author    sh1zen
  * @copyright Copyright (C) 2023.
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
+
+namespace WPMembership\core;
+
+use WPS\core\Query;
+use WPS\core\UtilEnv;
+
 class MembershipLevel
 {
     public int $id;
@@ -23,8 +26,6 @@ class MembershipLevel
 
     public bool $active;
 
-    public int $count;
-
     public function __construct($args)
     {
         $args = array_filter((array)$args);
@@ -36,6 +37,15 @@ class MembershipLevel
         $this->duration = $args['duration'] ?? 0;
         $this->type = $args['type'] ?? '';
         $this->active = UtilEnv::to_boolean($args['active'] ?? true);
-        $this->count = $args['count'] ?? 0;
+    }
+
+    public function duration(): array
+    {
+        return UtilEnv::convertSecondsToDuration($this->duration);
+    }
+
+    public function count(): int
+    {
+        return (int) Query::getInstance()->select('COUNT(*)', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->where(['level_id' => $this->id])->query_one() ?: 0;
     }
 }

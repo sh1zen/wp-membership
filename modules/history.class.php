@@ -7,7 +7,6 @@
 
 namespace WPMembership\modules;
 
-use WPS\core\Actions;
 use WPS\core\Graphic;
 use WPS\modules\Module;
 
@@ -15,7 +14,7 @@ use WPMembership\modules\supporters\HistoryList;
 
 class Mod_History extends Module
 {
-    public array $scopes = array('admin-page', 'autoload');
+    public array $scopes = array('admin-page');
 
     protected string $context = 'wpms';
 

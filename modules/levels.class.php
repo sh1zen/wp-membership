@@ -18,7 +18,7 @@ use WPMembership\modules\supporters\LevelsList;
 
 class Mod_Levels extends Module
 {
-    public array $scopes = array('admin-page', 'autoload');
+    public array $scopes = array('admin-page', 'admin');
 
     protected string $context = 'wpms';
 

@@ -18,7 +18,6 @@ WPS\core\UtilEnv::db_create(
             "duration"    => "INT NOT NULL DEFAULT 0", // in seconds
             "type"        => "VARCHAR(255)",
             "active"      => "INT NOT NULL DEFAULT 0",
-            "count"       => "BIGINT NOT NULL DEFAULT 0",
         ],
         "primary_key" => "id"
     ],

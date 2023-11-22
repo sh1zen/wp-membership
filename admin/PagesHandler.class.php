@@ -76,16 +76,16 @@ class PagesHandler
 
     public function register_assets(): void
     {
-        $assets_url = wpms()->plugin_base_url;
+        $assets_url = PluginInit::getInstance()->plugin_base_url;
 
         $min = wps_utils()->online ? '.min' : '';
 
         wp_register_style("wpms_css", "{$assets_url}assets/style{$min}.css", ['vendor-wps-css']);
 
         wps_localize([
-            'saved'              => __('Settings Saved', 'wpms'),
-            'error'              => __('Request fail', 'wpms'),
-            'success'            => __('Request succeed', 'wpms'),
+            'saved'   => __('Settings Saved', 'wpms'),
+            'error'   => __('Request fail', 'wpms'),
+            'success' => __('Request succeed', 'wpms'),
         ]);
     }
 
@@ -104,25 +104,28 @@ class PagesHandler
                     <block class="wps-header">
                         <h1>WP Membership Dashboard</h1>
                     </block>
-                    <h2><?php _e('Modules:', 'wpms'); ?></h2>
-                    <p>
+                    <h2><?php _e('Members:', 'wpms'); ?></h2>
+                    <ul class="wps">
                         <?php
-                        echo '<div><b>' . __('This plugin uses modules, so you can disable non necessary one to not weigh down WordPress.', 'wpms') . '</b></div><br>';
-                        $modules = wps('wpms')->moduleHandler->get_modules(array('excepts' => array('cron', 'modules_handler', 'settings')));
-                        $modules = array_column($modules, 'name');
-                        $modules = str_replace(' ', '_', $modules);
-                        echo '<div><b>' . __('Currently active:', 'wpms') . '</b> <code>' . implode('</code>, <code>', $modules) . '</code></div><br>';
-                        echo '<div><b>' . sprintf(__('Manage modules: <a href="%s">here</a>.', 'wpms'), admin_url('admin.php?page=wpms-settings#settings-modules_handler')) . '</b></div><br>';
-                        echo '<div><b>' . sprintf(__('Configure them: <a href="%s">here</a>.', 'wpms'), admin_url('admin.php?page=wpms-modules-settings')) . '</b></div><br>';
+                        foreach (count_users()['avail_roles'] ?? [] as $role => $count) {
+                            echo "<li class='wps'><strong>" . ucwords($role) . "</strong>: $count</li>";
+                        }
                         ?>
-                    </p>
+                    </ul>
+                    <h2><?php _e('Members:', 'wpms'); ?></h2>
+                    <ul class="wps">
+                        <?php
+                        foreach (wpms_get_levels() as $level) {
+                            echo "<li class='wps'><strong>" . ucwords($level->title) . "</strong>: ".$level->count()."</li>";
+                        }
+                        ?>
+                    </ul>
                 </block>
             </section>
             <aside class="wps">
                 <section class="wps-box">
                     <div class="wps-donation-wrap">
-                        <div
-                            class="wps-donation-title"><?php _e('Support this project, buy me a coffee.', 'wpms'); ?></div>
+                        <div class="wps-donation-title"><?php _e('Support this project, buy me a coffee.', 'wpms'); ?></div>
                         <br>
                         <a href="https://www.paypal.com/donate?business=dev.sh1zen%40outlook.it&item_name=Thank+you+in+advanced+for+the+kind+donations.+You+will+sustain+me+developing+WP-Optimizer.&currency_code=EUR"
                            target="_blank">

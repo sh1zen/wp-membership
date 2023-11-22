@@ -171,11 +171,9 @@ class PluginInit
     {
         wps('wpms')->settings->activate();
 
-        wps('wpms')->cron->activate();
-
         /**
          * Hook for the plugin activation
-         * @since 1.4.0
+         * @since 1.0.0
          */
         do_action('wpms-activate');
     }
@@ -204,11 +202,9 @@ class PluginInit
 
     private function deactivate()
     {
-        wps('wpms')->cron->deactivate();
-
         /**
          * Hook for the plugin deactivation
-         * @since 1.4.0
+         * @since 1.0.0
          */
         do_action('wpms-deactivate');
     }
@@ -225,7 +221,7 @@ class PluginInit
     public function donate_link($plugin_meta, $plugin_file, $plugin_data, $status): array
     {
         if ($plugin_file == $this->plugin_basename) {
-            $plugin_meta[] = '&hearts; <a target="_blank" href="https://www.paypal.com/donate/?business=dev.sh1zen%40outlook.it&item_name=Thank+you+in+advanced+for+the+kind+donations.+You+will+sustain+me+developing+WP-Optimizer.&currency_code=EUR">' . __('Buy me a beer', 'wpms') . ' :o)</a>';
+            $plugin_meta[] = '&hearts; <a target="_blank" href="https://www.paypal.com/donate/?business=dev.sh1zen%40outlook.it&item_name=Thank+you+in+advanced+for+the+kind+donations.+You+will+sustain+me+developing+WP-Membership.&currency_code=EUR">' . __('Buy me a beer', 'wpms') . ' :o)</a>';
         }
 
         return $plugin_meta;

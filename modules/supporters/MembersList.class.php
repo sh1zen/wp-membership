@@ -11,6 +11,7 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+use WPMembership\core\Member;
 use WPS\core\Actions;
 use WPS\core\Query;
 
@@ -39,23 +40,23 @@ class MembersList extends \WP_List_Table
         );
     }
 
-    public function column_subscription($user)
+    public function column_subscription($member)
     {
-        $subscription = wpms_user_get_subscription($user);
+        $member = wpms_get_member($member);
 
-        $level_title = $subscription->get_level()->title ?: __('None', 'wpms');
+        $level_title = $member->get_sub()->get_level()->title ?: __('None', 'wpms');
 
         $output = "<strong>$level_title</strong>";
 
         $row_actions = array();
 
-        if ($subscription->level_id) {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'edit') . "&user_id=$user->ID" . "'>" . __('Edit', 'wpms') . "</a></span>";
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'renew_sub') . "&user_id=$user->ID" . "'>" . __('Renew', 'wpms') . "</a></span>";
-            $row_actions[] = "<span class='inline delete'><a href='" . Actions::get_url($this->action_hook, 'drop_sub') . "&user_id=$user->ID" . "'>" . __('Drop', 'wpms') . "</a></span>";
+        if ($member->get_sub()->is_valid()) {
+            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'edit') . "&user_id=" . $member->get_user()->ID . "'>" . __('Edit', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'renew_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Renew', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline delete'><a href='" . Actions::get_url($this->action_hook, 'drop_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Drop', 'wpms') . "</a></span>";
         }
         else {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'add') . "&user_id=$user->ID" . "'>" . __('Add', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'add') . "&user_id=" . $member->get_user()->ID . "'>" . __('Add', 'wpms') . "</a></span>";
         }
 
         $output .= '<br><div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
@@ -63,11 +64,13 @@ class MembersList extends \WP_List_Table
         return $output;
     }
 
-    public function column_username($user)
+    public function column_username($member)
     {
-        $edit_link = admin_url('user-edit.php?user_id=' . $user->ID);
+        $member = wpms_get_member($member);
 
-        $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . ucwords(strtolower(esc_html($user->display_name))) . '</a></strong>';
+        $edit_link = admin_url('user-edit.php?user_id=' . $member->get_user()->ID);
+
+        $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . ucwords(strtolower(esc_html($member->get_user()->display_name))) . '</a></strong>';
 
         $row_actions = [
             "<span class='edit'><a href='$edit_link'>" . __('Edit', 'wpms') . "</a></span>"
@@ -113,204 +116,6 @@ class MembersList extends \WP_List_Table
         <?php
     }
 
-    public function extra_tablenav($which)
-    {
-        if ('top' !== $which) {
-            if ('bottom' === $which) {
-                $this->extra_tablenav_footer();
-            }
-            return;
-        }
-
-        echo '<div class="alignleft actions">';
-
-        echo '<select name="filter_level">';
-        printf('<option value="">%s</option>', __('Filter by subscription', 'wpms'));
-        printf('<option value="0"%s>%s</option>', selected($_REQUEST['filter_level'] ?? '0', '0', false), __('View Inactive Users', 'wpms'));
-        foreach (wpms_level_get_all() as $level) {
-            printf('<option value="%s"%s>%s</option>', $level->id, selected($_REQUEST['filter_level'] ?? '', $level->id, false), ucwords($level->title));
-        }
-        echo '</select>';
-
-        submit_button(__('Filter', 'wpms'), 'button', '', false);
-
-        echo '</div>';
-
-        echo '<div class="alignleft actions">';
-
-        echo '<select name="filter_role">';
-        printf('<option value="">%s</option>', __('Filter by User Role', 'wpms'));
-        foreach (wp_roles()->roles as $role_slug => $role_details) {
-            printf('<option value="%s"%s>%s</option>', $role_slug, selected($_REQUEST['filter_role'] ?? '', $role_slug, false), ucwords($role_details['name']));
-        }
-        echo '</select>';
-
-        submit_button(__('Filter', 'wpms'), 'button', '', false);
-
-        echo '</div>';
-    }
-
-    public function extra_tablenav_footer()
-    {
-        $actions = [
-            'csv'        => 'CSV',
-            'json'       => 'JSON',
-            'xml'        => 'XML',
-            'ods'        => 'Spreadsheet',
-            'serialized' => 'Serialized',
-            'php_array'  => 'PHP ARRAY'
-        ];
-        ?>
-        <div class="alignleft actions recordactions">
-            <select name="export-format">
-                <option value=""><?php echo esc_attr__('Export File Format', 'wpms'); ?></option>
-                <?php foreach ($actions as $action_key => $action_title) : ?>
-                    <option value="<?php echo esc_attr($action_key); ?>"><?php echo esc_html($action_title); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <button class="button button-primary" type="submit" name="<?php echo $this->action_hook; ?>" value="export">
-            <?php _e('Export Data', 'wpms') ?>
-        </button>
-        <?php
-    }
-
-    public function column_default($item, $column_name)
-    {
-        switch ($column_name) {
-
-            case 'user_name':
-
-                $return = '<span>' . ucwords(strtolower(esc_html(wps_get_user($item->ID)->first_name . ' ' . wps_get_user($item->ID)->last_name))) . '</span>';
-                break;
-
-            case 'email':
-                $return = '<span>' . esc_html($item->user_email) . '</span>';
-                break;
-
-            case 'expire':
-                if ($expire = wpms_user_get_subscription($item->ID)->expirydate) {
-                    $expire = date("Y-m-d H:i", $expire);
-                }
-                $return = "<span>" . ($expire ?: __('No', 'wpms')) . "</span>";
-                break;
-
-            case 'renew_count':
-                $count = Query::getInstance()->select('COUNT(*)', WP_MEMBERSHIP_TABLE_HISTORY)->where(['user_id' => $item->ID, 'action' => 'join'])->query(true);
-                $return = "<span>$count / " . wpms_user_get_pays($item) . " € </span>";
-                break;
-
-            default:
-                $return = '<span>' . esc_html($item->$column_name ?? 'N/B') . '</span>';
-        }
-
-        return $return;
-    }
-
-    public function get_items($use_limit = false)
-    {
-        // get requested order and other filters from _wp_http_referer
-        parse_str(parse_url($_REQUEST['_wp_http_referer'] ?? '', PHP_URL_QUERY), $request);
-
-        $query = $this->parse_query($request)->output(ARRAY_A);
-
-        $offset = ($this->get_pagenum() - 1) * 25;
-
-        if ($use_limit) {
-            $query->limit(25);
-        }
-
-        return $query->offset($offset)->action('select')->columns('*')->query();
-    }
-
-    private function parse_query($request = ''): Query
-    {
-        if (empty($request)) {
-            $request = $_REQUEST;
-        }
-
-        $query = Query::getInstance(OBJECT, true);
-
-        $query->tables($query->wpdb()->users);
-        $query->join($query->wpdb()->users, WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS, ['ID' => 'user_id'], 'LEFT JOIN');
-
-        $query->orderby(
-            match ($request['orderby'] ?? 'id') {
-                'expire' => [WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS => 'expirydate'],
-                default => [$query->wpdb()->users => 'ID'],
-            },
-            $request['order'] ?? 'DESC'
-        );
-
-        if (!empty($request['filter_level'])) {
-            $query->where([WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS => ['level_id' => $request['filter_level']]]);
-        }
-
-        if (!empty($request['filter_role'])) {
-            $query->tables($query->wpdb()->usermeta, [$query->wpdb()->usermeta => 'user_id', $query->wpdb()->users => 'ID']);
-            $query->where([$query->wpdb()->usermeta => [['meta_key' => 'wp_capabilities'], ['meta_value' => $request['filter_role'], 'compare' => 'LIKE']]]);
-        }
-
-        if (!empty($request['s'])) {
-            $query->where(
-                [
-                    $query->wpdb()->users => ['user_nicename' => $request['s'], 'compare' => 'LIKE'],
-                    $query->wpdb()->users => ['user_email' => $request['s'], 'compare' => 'LIKE'],
-                    $query->wpdb()->users => ['display_name' => $request['s'], 'compare' => 'LIKE'],
-                    $query->wpdb()->users => ['ID' => $request['s']]
-                ],
-                'OR'
-            );
-        }
-
-        return $query;
-    }
-
-    public function prepare_items()
-    {
-        $query = $this->parse_query();
-
-        $this->_column_headers = array($this->get_columns(), [], $this->get_sortable_columns(), $this->get_primary_column_name());
-
-        $offset = ($this->get_pagenum() - 1) * 25;
-
-        $total_items = $query->action('select')->columns('COUNT(*)')->query(true);
-
-        $this->items = $query->limit(25)->offset($offset)->columns('*')->recompile()->query();
-
-        print_r($query->export());
-
-        $this->set_pagination_args(array(
-            'total_items' => $total_items,
-            'per_page'    => 25,
-            'total_pages' => ceil($total_items / 25),
-        ));
-    }
-
-    public function get_columns()
-    {
-        return array(
-            'username'     => __('Username', 'wpms'),
-            'user_name'    => __('Name', 'wpms'),
-            'email'        => __('E-mail', 'wpms'),
-            'subscription' => __('Subscription', 'wpms'),
-            'expire'       => __('Expire', 'wpms'),
-            'renew_count'  => __('Renew / Payments', 'wpms'),
-        );
-    }
-
-    protected function get_sortable_columns()
-    {
-        return array(
-            'expire' => array('expire', 'desc'),
-        );
-    }
-
-    public function no_items()
-    {
-        _e('No Users found.', 'wpms');
-    }
-
     protected function bulk_actions($which = '')
     {
         if (is_null($this->_actions)) {
@@ -346,5 +151,220 @@ class MembersList extends \WP_List_Table
         echo "</select>";
 
         submit_button(__('Apply'), 'action', $this->action_hook, false);
+    }
+
+    public function extra_tablenav($which)
+    {
+        if ('top' !== $which) {
+            if ('bottom' === $which) {
+                $this->extra_tablenav_footer();
+            }
+            return;
+        }
+
+        echo '<div class="alignleft actions">';
+        echo '<select name="filter_level">';
+        printf('<option value="">%s</option>', __('Filter by subscription', 'wpms'));
+        printf('<option value="0"%s>%s</option>', selected($_REQUEST['filter_level'] ?? '', '0', false), __('View Inactive Users', 'wpms'));
+        foreach (wpms_get_levels() as $level) {
+            printf('<option value="%s"%s>%s</option>', $level->id, selected($_REQUEST['filter_level'] ?? '', $level->id, false), ucwords($level->title));
+        }
+        echo '</select>';
+        submit_button(__('Filter', 'wpms'), 'button', '', false);
+        echo '</div>';
+
+        echo '<div class="alignleft actions">';
+        echo '<select name="filter_role">';
+        printf('<option value="">%s</option>', __('Filter by User Role', 'wpms'));
+        foreach (wp_roles()->roles as $role_slug => $role_details) {
+            printf('<option value="%s"%s>%s</option>', $role_slug, selected($_REQUEST['filter_role'] ?? '', $role_slug, false), ucwords($role_details['name']));
+        }
+        echo '</select>';
+        submit_button(__('Filter', 'wpms'), 'button', '', false);
+        echo '</div>';
+
+        echo '<div class="alignleft actions">';
+        echo '<select name="filter_expiring">';
+        printf('<option value="">%s</option>', __('Filter Expiring', 'wpms'));
+        printf('<option value="7"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '7', false), __('7 Days', 'wpms'));
+        printf('<option value="30"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '30', false), __('30 Days', 'wpms'));
+        printf('<option value="60"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '60', false), __('60 Days', 'wpms'));
+        printf('<option value="90"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '90', false), __('90 Days', 'wpms'));
+        echo '</select>';
+        submit_button(__('Filter', 'wpms'), 'button', '', false);
+        echo '</div>';
+    }
+
+    public function extra_tablenav_footer()
+    {
+        $actions = [
+            'csv'        => 'CSV',
+            'json'       => 'JSON',
+            'xml'        => 'XML',
+            'ods'        => 'Spreadsheet',
+            'serialized' => 'Serialized',
+            'php_array'  => 'PHP ARRAY'
+        ];
+        ?>
+        <div class="alignleft actions recordactions">
+            <select name="export-format">
+                <option value=""><?php echo esc_attr__('Export File Format', 'wpms'); ?></option>
+                <?php foreach ($actions as $action_key => $action_title) : ?>
+                    <option value="<?php echo esc_attr($action_key); ?>"><?php echo esc_html($action_title); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <button class="button button-primary" type="submit" name="<?php echo $this->action_hook; ?>" value="export">
+            <?php _e('Export Data', 'wpms') ?>
+        </button>
+        <?php
+    }
+
+    public function column_default($item, $column_name)
+    {
+        $item = wpms_get_member($item);
+
+        switch ($column_name) {
+
+            case 'user_name':
+                $return = '<span>' . ucwords(strtolower(esc_html($item->get_user()->first_name . ' ' . $item->get_user()->last_name))) . '</span>';
+                break;
+
+            case 'email':
+                $return = '<span>' . esc_html($item->get_user()->user_email) . '</span>';
+                break;
+
+            case 'expire':
+                if ($expire = $item->get_sub()->end_time()) {
+                    $expire = date("Y-m-d H:i", $expire);
+                }
+                $return = "<span>" . ($expire ?: __('No', 'wpms')) . "</span>";
+                break;
+
+            case 'renew_count':
+                $return = "<span>" . $item->renew_count() . " / " . $item->get_pays() . " € </span>";
+                break;
+
+            default:
+                $return = '<span>' . __('None', 'wpms') . '</span>';
+        }
+
+        return $return;
+    }
+
+    public function get_items($use_limit = false)
+    {
+        $query = $this->parse_query()->output(ARRAY_A);
+
+        $offset = ($this->get_pagenum() - 1) * 25;
+
+        if ($use_limit) {
+            $query->limit(25);
+        }
+
+        return $query->offset($offset)->action('select')->columns('*')->query();
+    }
+
+    private function parse_query($request = ''): Query
+    {
+        if (empty($request)) {
+            $request = $_REQUEST;
+        }
+
+        $query = Query::getInstance(OBJECT, true);
+
+        $query->tables($query->wpdb()->users);
+        $query->join($query->wpdb()->users, WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS, ['ID' => 'user_id'], 'LEFT JOIN');
+
+        $query->orderby(
+            match ($request['orderby'] ?? 'id') {
+                'expire' => [WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS => 'expirydate'],
+                default => [$query->wpdb()->users => 'ID'],
+            },
+            $request['order'] ?? 'DESC'
+        );
+
+        if (isset($request['filter_level'])) {
+
+            if (!empty($request['filter_level'])) {
+                $query->where(['level_id' => $request['filter_level']], 'AND', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+            }
+            else {
+                $query->where(
+                    ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
+                    'AND',
+                    $query->wpdb()->users
+                );
+            }
+        }
+
+        if (!empty($request['filter_role'])) {
+            $query->tables($query->wpdb()->usermeta, [$query->wpdb()->usermeta => 'user_id', $query->wpdb()->users => 'ID']);
+            $query->where([$query->wpdb()->usermeta => [['meta_key' => 'wp_capabilities'], ['meta_value' => $request['filter_role'], 'compare' => 'LIKE']]]);
+        }
+
+        if (!empty($request['filter_expiring'])) {
+            $query->where([
+                'expirydate' => [wps_time('mysql'), wps_time('mysql', DAY_IN_SECONDS * absint($request['filter_expiring']))], 'compare' => 'BETWEEN'
+            ], WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+        }
+
+        if (!empty($request['s'])) {
+            $query->where(
+                [
+                    ['user_nicename' => $request['s'], 'compare' => 'LIKE'],
+                    ['user_email' => $request['s'], 'compare' => 'LIKE'],
+                    ['display_name' => $request['s'], 'compare' => 'LIKE'],
+                    ['ID' => $request['s']]
+                ],
+                'OR',
+                $query->wpdb()->users
+            );
+        }
+
+        return $query;
+    }
+
+    public function prepare_items()
+    {
+        $query = $this->parse_query();
+
+        $this->_column_headers = array($this->get_columns(), [], $this->get_sortable_columns(), $this->get_primary_column_name());
+
+        $offset = ($this->get_pagenum() - 1) * 25;
+
+        $total_items = $query->action('select')->columns('COUNT(*)')->query_one();
+
+        $this->items = $query->limit(25)->offset($offset)->columns('*')->recompile()->query();
+
+        $this->set_pagination_args(array(
+            'total_items' => $total_items,
+            'per_page'    => 25,
+            'total_pages' => ceil($total_items / 25),
+        ));
+    }
+
+    public function get_columns()
+    {
+        return array(
+            'username'     => __('Username', 'wpms'),
+            'user_name'    => __('Name', 'wpms'),
+            'email'        => __('E-mail', 'wpms'),
+            'subscription' => __('Subscription', 'wpms'),
+            'expire'       => __('Expire', 'wpms'),
+            'renew_count'  => __('Renew / Payments', 'wpms'),
+        );
+    }
+
+    protected function get_sortable_columns()
+    {
+        return array(
+            'expire' => array('expire', 'desc'),
+        );
+    }
+
+    public function no_items()
+    {
+        _e('No Users found.', 'wpms');
     }
 }

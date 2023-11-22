@@ -154,7 +154,7 @@ class CommunicationList extends \WP_List_Table
         switch ($column_name) {
 
             case 'level_name':
-                $return = "<span>" . (wpms_level_get($item->level_id)->title ?: __('All', 'wpms')) . "</span>";
+                $return = "<span>" . (wpms_get_level($item->level_id)->title ?: __('All', 'wpms')) . "</span>";
                 break;
 
             case 'message':
@@ -193,10 +193,7 @@ class CommunicationList extends \WP_List_Table
 
     public function get_items($use_limit = false)
     {
-        // get requested order and other filters from _wp_http_referer
-        parse_str(parse_url($_REQUEST['_wp_http_referer'] ?? '', PHP_URL_QUERY), $request);
-
-        $query = $this->parse_query($request)->output(ARRAY_A);
+        $query = $this->parse_query()->output(ARRAY_A);
 
         $offset = ($this->get_pagenum() - 1) * 25;
 
