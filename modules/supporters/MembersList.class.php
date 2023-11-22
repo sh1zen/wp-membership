@@ -284,18 +284,15 @@ class MembersList extends \WP_List_Table
             $request['order'] ?? 'DESC'
         );
 
-        if (isset($request['filter_level'])) {
-
-            if (!empty($request['filter_level'])) {
-                $query->where(['level_id' => $request['filter_level']], 'AND', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
-            }
-            else {
-                $query->where(
-                    ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
-                    'AND',
-                    $query->wpdb()->users
-                );
-            }
+        if (!empty($request['filter_level'])) {
+            $query->where(['level_id' => $request['filter_level']], 'AND', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+        }
+        elseif ($request['filter_level'] == '0') {
+            $query->where(
+                ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
+                'AND',
+                $query->wpdb()->users
+            );
         }
 
         if (!empty($request['filter_role'])) {
