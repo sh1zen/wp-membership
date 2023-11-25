@@ -43,7 +43,7 @@ class MembershipSubscription
 
     public function time_left()
     {
-        return max($this->expirydate - wps_time('timestamp'), 0);
+        return max($this->end_time() - time(), 0);
     }
 
     public function is_valid(): bool

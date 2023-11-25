@@ -252,7 +252,7 @@ class Disk
         return $bytesTotal;
     }
 
-    public static function remove_old_file($dir, $max_age = 60, $recursive = false)
+    public static function remove_old_file($dir, $max_age = 60, $recursive = false): void
     {
         static $now_time;
 
@@ -272,11 +272,11 @@ class Disk
             return;
         }
 
-        UtilEnv::rise_time_limit(240);
-
         while (($file = readdir($dh)) !== false) {
 
             $file = $dir . '/' . $file;
+
+            UtilEnv::safe_time_limit(10, 240);
 
             if (!is_file($file)) {
                 if ($recursive and is_dir($file)) {

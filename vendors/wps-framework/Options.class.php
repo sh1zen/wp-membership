@@ -26,84 +26,24 @@ class Options
 
         $this->table_name = $table_name;
 
-        Actions::schedule("$context-clear-options", DAY_IN_SECONDS, function () {
+        CronActions::schedule("$context-clear-options", 'daily', function () {
             /**
              * remove expired values once a day
              */
             $this->delete_expired();
-        });
+        }, '23:00');
     }
 
-    public function get($obj_id, $option, $context = 'core', $default = false, $cache = true)
-    {
-        global $wpdb;
-
-        if (empty($option)) {
-            return $default;
-        }
-
-        $cache_key = $obj_id . $option . $context;
-
-        if ($cache and !is_null($value = $this->cache->get($cache_key, 'db_cache', null))) {
-            return $value;
-        }
-
-        $value = $default;
-
-        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $this->table_name() . " WHERE obj_id = %s AND item = %s AND context = %s LIMIT 1", $obj_id, $option, $context));
-
-        if (is_null($row)) {
-            return $default;
-        }
-
-        if (is_object($row)) {
-
-            $expiration = $row->expiration ? intval($row->expiration) : false;
-
-            if (!$expiration or $expiration >= time()) {
-                $value = maybe_unserialize($row->value);
-            }
-            else {
-                $this->remove($obj_id, $option, $context);
-            }
-        }
-
-        if ($cache) {
-            $this->cache->set($cache_key, $value, 'db_cache');
-        }
-
-        return $value;
-    }
-
-    public function table_name()
-    {
-        return $this->table_name;
-    }
-
-    public function remove($obj_id, $option, $context = 'core')
-    {
-        global $wpdb;
-
-        if (empty($option) or !$obj_id) {
-            return false;
-        }
-
-        $result = $wpdb->query($wpdb->prepare("DELETE FROM " . $this->table_name() . " WHERE item = %s AND obj_id = %s AND context = %s", $option, $obj_id, $context));
-
-        if (!$result) {
-            return false;
-        }
-
-        $this->cache->delete($obj_id . $option . $context, 'db_cache');
-
-        return true;
-    }
-
-    public function delete_expired()
+    public function delete_expired(): void
     {
         global $wpdb;
 
         $wpdb->query("DELETE FROM " . $this->table_name() . " WHERE expiration > 0 AND expiration < " . time());
+    }
+
+    public function table_name(): string
+    {
+        return $this->table_name;
     }
 
     /**
@@ -156,6 +96,66 @@ class Options
         }
 
         $this->cache->set($obj_id . $option . $context, $value, 'db_cache', true);
+
+        return true;
+    }
+
+    public function get($obj_id, $option, $context = 'core', $default = false, $cache = true)
+    {
+        global $wpdb;
+
+        if (empty($option)) {
+            return $default;
+        }
+
+        $cache_key = $obj_id . $option . $context;
+
+        if ($cache and !is_null($value = $this->cache->get($cache_key, 'db_cache', null))) {
+            return $value;
+        }
+
+        $value = $default;
+
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $this->table_name() . " WHERE obj_id = %s AND item = %s AND context = %s LIMIT 1", $obj_id, $option, $context));
+
+        if (is_null($row)) {
+            return $default;
+        }
+
+        if (is_object($row)) {
+
+            $expiration = $row->expiration ? intval($row->expiration) : false;
+
+            if (!$expiration or $expiration >= time()) {
+                $value = maybe_unserialize($row->value);
+            }
+            else {
+                $this->remove($obj_id, $option, $context);
+            }
+        }
+
+        if ($cache) {
+            $this->cache->set($cache_key, $value, 'db_cache');
+        }
+
+        return $value;
+    }
+
+    public function remove($obj_id, $option, $context = 'core')
+    {
+        global $wpdb;
+
+        if (empty($option) or !$obj_id) {
+            return false;
+        }
+
+        $result = $wpdb->query($wpdb->prepare("DELETE FROM " . $this->table_name() . " WHERE item = %s AND obj_id = %s AND context = %s", $option, $obj_id, $context));
+
+        if (!$result) {
+            return false;
+        }
+
+        $this->cache->delete($obj_id . $option . $context, 'db_cache');
 
         return true;
     }

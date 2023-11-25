@@ -7,7 +7,7 @@
 
 namespace WPMembership\modules;
 
-use WPS\core\Actions;
+use WPS\core\RequestActions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Query;
@@ -24,8 +24,8 @@ class Mod_Levels extends Module
 
     public function actions(): void
     {
-        Actions::request($this->action_hook, function ($action) {
 
+        RequestActions::request($this->action_hook, function ($action) {
             $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_LEVELS);
 
             switch ($action) {
@@ -111,7 +111,7 @@ class Mod_Levels extends Module
             <block class="wps">
                 <section class='wps-header'><h1><?php _e('Subscription plans', 'wpms'); ?></h1></section>
                 <?php
-                if (Actions::get_request($this->action_hook_page) === 'edit') {
+                if (RequestActions::get_request($this->action_hook_page) === 'edit') {
                     echo $this->render_edit();
                 }
                 else {
@@ -207,18 +207,18 @@ class Mod_Levels extends Module
                 ),
             );
 
-            Actions::nonce_field($this->action_hook);
+            RequestActions::nonce_field($this->action_hook);
             Graphic::generate_fields($setting_fields, $this->infos(), ['name_prefix' => 'new_level']);
 
             ?>
             <row class="wps-custom-action wps-row">
                 <?php
                 if (isset($defaults['id']) and $defaults['id']) {
-                    echo Actions::get_action_button($this->action_hook, 'update', __('Update', 'wpms'), 'button-primary');
+                    echo RequestActions::get_action_button($this->action_hook, 'update', __('Update', 'wpms'), 'button-primary');
                     echo "<input type='hidden' name='new_level[level_id]' value='" . esc_attr($defaults['id']) . "'>";
                 }
                 else {
-                    echo Actions::get_action_button($this->action_hook, 'add_new', __('Add new', 'wpms'), 'button-primary');
+                    echo RequestActions::get_action_button($this->action_hook, 'add_new', __('Add new', 'wpms'), 'button-primary');
                 }
                 ?>
             </row>
@@ -240,7 +240,7 @@ class Mod_Levels extends Module
             <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
                 <?php $table->display(); ?>
-                <?php Actions::nonce_field($this->action_hook); ?>
+                <?php RequestActions::nonce_field($this->action_hook); ?>
             </form>
         </block>
         <?php

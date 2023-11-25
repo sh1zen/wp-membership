@@ -11,7 +11,7 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-use WPS\core\Actions;
+use WPS\core\RequestActions;
 use WPS\core\Query;
 use WPS\core\StringHelper;
 use WPS\core\UtilEnv;
@@ -43,7 +43,7 @@ class CommunicationList extends \WP_List_Table
 
     public function column_subject($item)
     {
-        $edit_link = Actions::get_url($this->action_page_hook, 'edit') . "&comm_id=$item->id";
+        $edit_link = RequestActions::get_url($this->action_page_hook, 'edit') . "&comm_id=$item->id";
 
         $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . esc_html($item->subject) . '</a></strong>';
 
@@ -52,15 +52,15 @@ class CommunicationList extends \WP_List_Table
         $row_actions[] = "<span class='edit'><a href='$edit_link'>" . __('Edit', 'wpms') . "</a></span>";
 
         if (!UtilEnv::to_boolean($item->active)) {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'activate') . "&comm_id=$item->id" . "'>" . __('Activate', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'activate') . "&comm_id=$item->id" . "'>" . __('Activate', 'wpms') . "</a></span>";
         }
         else {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'deactivate') . "&comm_id=$item->id" . "'>" . __('Suspend', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'deactivate') . "&comm_id=$item->id" . "'>" . __('Suspend', 'wpms') . "</a></span>";
         }
 
-        $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'sendme') . "&comm_id=$item->id" . "'>" . __('Send Me', 'wpms') . "</a></span>";
+        $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'sendme') . "&comm_id=$item->id" . "'>" . __('Send Me', 'wpms') . "</a></span>";
 
-        $row_actions[] = "<span class='delete'><a href='" . Actions::get_url($this->action_hook, 'delete') . "&comm_id=$item->id" . "'>" . __('Delete', 'wpms') . "</a></span>";
+        $row_actions[] = "<span class='delete'><a href='" . RequestActions::get_url($this->action_hook, 'delete') . "&comm_id=$item->id" . "'>" . __('Delete', 'wpms') . "</a></span>";
 
         $output .= '<br><div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
 

@@ -228,10 +228,10 @@ class odsWriter
         $dcCreator = $this->dom->createElement('dc:creator', get_option('blogname'));
         $meta->appendChild($dcCreator);
 
-        $creationDate = $this->dom->createElement('meta:creation-date', date('Y-m-d\TH:i:s\Z', wps_time()));
+        $creationDate = $this->dom->createElement('meta:creation-date', wps_time('Y-m-d\TH:i:s\Z'));
         $meta->appendChild($creationDate);
 
-        $dcDate = $this->dom->createElement('dc:date', date('Y-m-d\TH:i:s\Z', wps_time()));
+        $dcDate = $this->dom->createElement('dc:date', wps_time('Y-m-d\TH:i:s\Z'));
         $meta->appendChild($dcDate);
 
         // Append the <office:meta> element to <office:document-meta>

@@ -7,7 +7,7 @@
 
 namespace WPMembership\modules;
 
-use WPS\core\Actions;
+use WPS\core\RequestActions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Rewriter;
@@ -34,7 +34,7 @@ class Mod_Settings extends Module
 
     public function actions(): void
     {
-        Actions::request($this->action_hook, function ($action) {
+        RequestActions::request($this->action_hook, function ($action) {
 
             $response = false;
 
@@ -84,17 +84,17 @@ class Mod_Settings extends Module
         ?>
         <form method="POST" autocapitalize="off" autocomplete="off">
 
-            <?php Actions::nonce_field($this->action_hook); ?>
+            <?php RequestActions::nonce_field($this->action_hook); ?>
 
             <block class="wps-gridRow">
                 <row class="wps-custom-action wps-row">
                     <?php
 
-                    echo Actions::get_action_button($this->action_hook, 'reset_options', __('Reset Plugin options', 'wpms'));
+                    echo RequestActions::get_action_button($this->action_hook, 'reset_options', __('Reset Plugin options', 'wpms'));
 
-                    echo Actions::get_action_button($this->action_hook, 'restore_options', __('Restore Plugin options', 'wpms'));
+                    echo RequestActions::get_action_button($this->action_hook, 'restore_options', __('Restore Plugin options', 'wpms'));
 
-                    echo Actions::get_action_button($this->action_hook, 'export_options', __('Export Plugin options', 'wpms'), 'button-primary');
+                    echo RequestActions::get_action_button($this->action_hook, 'export_options', __('Export Plugin options', 'wpms'), 'button-primary');
 
                     ?>
                 </row>
@@ -107,7 +107,7 @@ class Mod_Settings extends Module
                         'context' => 'block'
                     ));
 
-                    echo Actions::get_action_button($this->action_hook, 'import_options', __('Import Plugin options', 'wpms'), 'button-primary');
+                    echo RequestActions::get_action_button($this->action_hook, 'import_options', __('Import Plugin options', 'wpms'), 'button-primary');
 
                    ?>
                 </row>

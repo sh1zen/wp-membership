@@ -137,7 +137,7 @@ class Settings
         return update_option($this->context, $options, 'yes');
     }
 
-    public function render_core_settings()
+    public function render_core_settings(): void
     {
         /**
          * Consider only modules with settings handlers
@@ -186,7 +186,7 @@ class Settings
         return Graphic::generateHTML_tabs_panels($fields);
     }
 
-    public function register_hooks()
+    public function register_hooks(): void
     {
         register_setting("$this->context-settings", $this->context, array(
             'type'              => 'array',

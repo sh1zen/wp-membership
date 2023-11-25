@@ -36,7 +36,7 @@ class MembershipLevel
         $this->description = $args['description'] ?? '';
         $this->duration = $args['duration'] ?? 0;
         $this->type = $args['type'] ?? '';
-        $this->active = UtilEnv::to_boolean($args['active'] ?? true);
+        $this->active = UtilEnv::to_boolean($args['active'] ?? false);
     }
 
     public function duration(): array

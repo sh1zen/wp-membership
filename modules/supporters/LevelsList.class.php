@@ -12,7 +12,7 @@ if (!class_exists('WP_List_Table')) {
 }
 
 use WPMembership\core\MembershipLevel;
-use WPS\core\Actions;
+use WPS\core\RequestActions;
 use WPS\core\Query;
 use WPS\core\UtilEnv;
 
@@ -42,7 +42,7 @@ class LevelsList extends \WP_List_Table
 
     public function column_title($item)
     {
-        $edit_link = Actions::get_url($this->action_page_hook, 'edit') . "&level_id=$item->id";
+        $edit_link = RequestActions::get_url($this->action_page_hook, 'edit') . "&level_id=$item->id";
 
         $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . esc_html($item->title) . '</a></strong>';
 
@@ -50,14 +50,14 @@ class LevelsList extends \WP_List_Table
 
         $row_actions[] = "<span class='edit'><a href='$edit_link'>" . __('Edit', 'wpms') . "</a></span>";
 
-        if (!UtilEnv::to_boolean($item->active)) {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'activate') . "&level_id=$item->id" . "'>" . __('Activate', 'wpms') . "</a></span>";
+        if (!$item->active) {
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'activate') . "&level_id=$item->id" . "'>" . __('Activate', 'wpms') . "</a></span>";
         }
         else {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'deactivate') . "&level_id=$item->id" . "'>" . __('Suspend', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'deactivate') . "&level_id=$item->id" . "'>" . __('Suspend', 'wpms') . "</a></span>";
         }
 
-        $row_actions[] = "<span class='delete'><a href='" . Actions::get_url($this->action_hook, 'delete') . "&level_id=$item->id" . "'>" . __('Delete', 'wpms') . "</a></span>";
+        $row_actions[] = "<span class='delete'><a href='" . RequestActions::get_url($this->action_hook, 'delete') . "&level_id=$item->id" . "'>" . __('Delete', 'wpms') . "</a></span>";
 
         $output .= '<div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
 

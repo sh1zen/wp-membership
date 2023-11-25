@@ -5,6 +5,14 @@
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
+
+if (!function_exists('is_closure')) {
+    function is_closure($t): bool
+    {
+        return $t instanceof \Closure;
+    }
+}
+
 if (\PHP_VERSION_ID < 70200) {
     require __DIR__ . '/72.php';
 }
@@ -24,4 +32,3 @@ if (\PHP_VERSION_ID < 80000) {
 if (\PHP_VERSION_ID < 80100) {
     require __DIR__ . '/81.php';
 }
-

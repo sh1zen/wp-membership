@@ -289,7 +289,7 @@ class Rewriter
     {
         $url = $this->request_path;
 
-        if ($trailingslashit and !(str_ends_with($url, '.php'))) {
+        if ($trailingslashit and !(str_ends_with($url, '.php')) and !(str_contains($url, '?'))) {
             $url = trailingslashit($url);
         }
 

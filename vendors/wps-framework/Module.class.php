@@ -250,7 +250,7 @@ class Module
     {
     }
 
-    public function ajax_handler($args = array())
+    public function ajax_handler($args = array()): void
     {
         Ajax::response([
             'body'  => sprintf(__('Wrong ajax request for %s', $this->context), $this->slug),

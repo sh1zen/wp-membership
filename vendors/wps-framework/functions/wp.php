@@ -7,17 +7,13 @@
 
 use WPS\core\UtilEnv;
 
-function wps_time($format = 'timestamp', $offset = 0, $gmt = false)
+function wps_time($format = 'timestamp', $offset = 0, $zoned = true)
 {
     if ($format === 'zero') {
         return '0000-00-00 00:00:00';
     }
 
     $time = time() + intval($offset);
-
-    if ($gmt) {
-        $time += (int)(get_option('gmt_offset') * HOUR_IN_SECONDS);
-    }
 
     if ('timestamp' === $format || 'U' === $format) {
         return $time;
@@ -27,18 +23,29 @@ function wps_time($format = 'timestamp', $offset = 0, $gmt = false)
         $format = 'Y-m-d H:i:s';
     }
 
+    if ($zoned) {
+        $time += (int)(get_option('gmt_offset')) * HOUR_IN_SECONDS;
+    }
+
     return date($format, $time);
+}
+
+function wps_str_to_time(string $timestamp, $gmt = true)
+{
+    $gmt_offset = $gmt ? (int)(get_option('gmt_offset')) * HOUR_IN_SECONDS : 0;
+
+    return strtotime($timestamp, time() + $gmt_offset) - $gmt_offset;
 }
 
 function wps_get_user($user): ?WP_User
 {
-   if (is_string($user) and is_email($user)) {
+    if (is_string($user) and is_email($user)) {
         $user = get_user_by('email', $user);
     }
     elseif (is_numeric($user)) {
         $user = get_user_by('id', $user);
     }
-    elseif(!$user instanceof WP_User) {
+    elseif (!$user instanceof WP_User) {
         $user = new WP_User($user);
     }
 
@@ -328,7 +335,7 @@ function wps_log($_data, $file_name = 'wps-debug.log', $mode = FILE_APPEND): voi
     }
 
     $data = '======================================================================================================' . PHP_EOL;
-    $data .= date("Y-m-d H:i:s") . PHP_EOL;
+    $data .= wps_time("Y-m-d H:i:s") . PHP_EOL;
     $data .= print_r($_data, true) . PHP_EOL;
     $data .= join(', ', array_reverse($caller)) . PHP_EOL;
 

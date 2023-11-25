@@ -10,112 +10,13 @@ namespace WPS\core;
 /**
  * Allow to easy schedule a callback action
  */
-class Actions
+class RequestActions
 {
     public static string $nonce_action = 'wps-action-ajax';
 
     public static string $nonce_name = 'wps_nonce';
 
     private static bool $suspend = false;
-
-    /**
-     * A name for this cron.
-     */
-    public string $hook;
-
-    /**
-     * How often to run this cron in seconds.
-     */
-    public int $interval;
-
-    /**
-     * @var Closure|string|null $callback Optional. Anonymous function, function name or null to override with your own handle() method.
-     */
-    public $callback;
-
-    /**
-     * How often the event should subsequently recur. See wp_get_schedules().
-     */
-    public string $recurrence;
-
-    public int $timestamp;
-
-    private function __construct($hook, $interval, $callback = null, $time = 0)
-    {
-        $this->hook = trim($hook);
-        $this->interval = absint($interval);
-        $this->callback = $callback;
-
-        if (empty($this->interval) or empty($this->hook)) {
-            return;
-        }
-
-        if (!$time) {
-            $this->timestamp = time();
-        }
-        else {
-
-            $next_run_local = strtotime($time, wps_time('timestamp'));
-
-            if (false === $next_run_local) {
-                return;
-            }
-
-            $this->timestamp = $next_run_local;
-        }
-
-        $this->recurrence = "wps_cron_{$this->interval}_seconds";
-
-        $this->schedule_event();
-
-        // schedules handler
-        add_filter('cron_schedules', [$this, 'add_schedule']);
-
-        // cron handler
-        add_action($this->hook, [$this, 'handle']);
-    }
-
-    private function schedule_event()
-    {
-        $crons = _get_cron_array();
-
-        if (!wps_utils()->is_upgrading()) {
-            foreach ($crons as $timestamp => $cron) {
-                if (isset($cron[$this->hook])) {
-                    return $timestamp;
-                }
-            }
-        }
-
-        // reschedule all events with current hook
-        foreach ($crons as $timestamp => $cron) {
-            if (is_array($cron)) {
-                unset($crons[$timestamp][$this->hook]);
-            }
-        }
-
-        if (!isset($crons[$this->timestamp])) {
-            $crons[$this->timestamp] = [];
-        }
-
-        $crons[$this->timestamp][$this->hook] = [];
-
-        /**
-         * key must be md5(serialize($args)) to allow wp_reschedule correctly works in case of missing scheduling
-         * so it is 40cd750bba9870f18aada2478b24840a
-         */
-        $crons[$this->timestamp][$this->hook]['40cd750bba9870f18aada2478b24840a'] = array(
-            'schedule' => $this->recurrence,
-            'args'     => [],
-            'interval' => $this->interval,
-        );
-
-        $crons = array_filter($crons);
-
-        uksort($crons, 'strnatcasecmp');
-
-        return _set_cron_array($crons);
-    }
 
     /**
      * Request action structure:
@@ -241,11 +142,6 @@ class Actions
         ), false);
     }
 
-    public static function schedule($hook, $interval, $callback = null, $time = 0): void
-    {
-        new static($hook, $interval, $callback, $time);
-    }
-
     public static function nonce_field($hook, $referrer = false, $display = true): string
     {
         $fields = wp_nonce_field(self::$nonce_action, self::$nonce_name, $referrer, false);
@@ -256,47 +152,5 @@ class Actions
         }
 
         return $fields;
-    }
-
-    public function unschedule_event(): bool
-    {
-        $crons = get_option('cron') ?: [];
-
-        foreach ($crons as $timestamp => $cron) {
-            if (is_array($cron)) {
-                unset($crons[$timestamp][$this->hook]);
-            }
-        }
-
-        $crons = array_filter($crons);
-
-        uksort($crons, 'strnatcasecmp');
-
-        return update_option('cron', $crons);
-    }
-
-    public function handle(): void
-    {
-        if (is_callable($this->callback)) {
-            call_user_func($this->callback);
-        }
-
-        if (wps_utils()->debug) {
-            wps_log("cron execution " . wps_time('mysql') . ": $this->hook > $this->timestamp");
-        }
-    }
-
-    public function add_schedule($schedules)
-    {
-        if (isset($schedules[$this->recurrence])) {
-            return $schedules;
-        }
-
-        $schedules[$this->recurrence] = [
-            'interval' => $this->interval,
-            'display'  => 'Every ' . $this->interval . ' seconds',
-        ];
-
-        return $schedules;
     }
 }

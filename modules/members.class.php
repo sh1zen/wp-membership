@@ -7,7 +7,7 @@
 
 namespace WPMembership\modules;
 
-use WPS\core\Actions;
+use WPS\core\RequestActions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Query;
@@ -23,7 +23,7 @@ class Mod_Members extends Module
 
     public function actions(): void
     {
-        Actions::request($this->action_hook, function ($action) {
+        RequestActions::request($this->action_hook, function ($action) {
 
             $response = false;
 
@@ -90,7 +90,7 @@ class Mod_Members extends Module
             <block class="wps">
                 <section class='wps-header'><h1><?php _e('Edit Members', 'wpms'); ?></h1></section>
                 <?php
-                if (Actions::get_request($this->action_hook_page, true) === 'add' or Actions::get_request($this->action_hook_page, true) === 'edit') {
+                if (RequestActions::get_request($this->action_hook_page, true) === 'add' or RequestActions::get_request($this->action_hook_page, true) === 'edit') {
                     echo $this->render_edit_membership();
                 }
                 else {
@@ -153,17 +153,17 @@ class Mod_Members extends Module
                 ),
             );
 
-            Actions::nonce_field($this->action_hook);
+            RequestActions::nonce_field($this->action_hook);
             Graphic::generate_fields($setting_fields, $this->infos(), ['name_prefix' => 'membership']);
             ?>
             <row class="wps-custom-action wps-row">
                 <?php
                 echo "<input type='hidden' name='membership[user_id]' value='" . esc_attr($user->ID) . "'>";
                 if ($current_sub->id) {
-                    echo Actions::get_action_button($this->action_hook, 'update_sub', __('Update', 'wpms'), 'button-primary');
+                    echo RequestActions::get_action_button($this->action_hook, 'update_sub', __('Update', 'wpms'), 'button-primary');
                 }
                 else {
-                    echo Actions::get_action_button($this->action_hook, 'add_new_sub', __('Subscribe', 'wpms'), 'button-primary');
+                    echo RequestActions::get_action_button($this->action_hook, 'add_new_sub', __('Subscribe', 'wpms'), 'button-primary');
                 }
                 ?>
             </row>
@@ -185,7 +185,7 @@ class Mod_Members extends Module
             <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
                 <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
                 <?php $table->display(); ?>
-                <?php Actions::nonce_field($this->action_hook); ?>
+                <?php RequestActions::nonce_field($this->action_hook); ?>
             </form>
         </block>
         <?php

@@ -279,6 +279,38 @@ function wpms_membership_drop($user)
     return $res ? $sub->level_id : false;
 }
 
+function wpms_drop_expired_memberships(): void
+{
+    $query = Query::getInstance()->select('user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+    $users = $query->where(['expirydate' => wps_time('mysql'), 'compare' => '<'])->query(false, true);
+
+    foreach ($users as $user_id) {
+
+        $user = wps_get_user($user_id);
+
+        wpms_membership_drop($user);
+        wpms_user_notify($user, 'expired');
+
+        UtilEnv::safe_time_limit(10, 60);
+    }
+}
+
+function wpms_notify_expiring_members(): void
+{
+    $query = Query::getInstance(OBJECT, true)->tables(
+        ['T0' => WP_MEMBERSHIP_TABLE_COMMUNICATIONS, 'T1' => WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS]
+    );
+    $query->columns([WP_MEMBERSHIP_TABLE_COMMUNICATIONS => 'id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS => 'user_id']);
+    $query->where([WP_MEMBERSHIP_TABLE_COMMUNICATIONS => ['active' => '1', 'event' => 'before_expire']]);
+    $query->where_unquoted(['T0.timegap' => 'TIMESTAMPDIFF(SECOND, NOW(), T1.expirydate)', 'compare' => '>']);
+    $query->limit(10);
+
+    foreach ($query->query() as $match) {
+        UtilEnv::safe_time_limit(10, 60);
+        wpms_user_notify($match->user_id, $match->id);
+    }
+}
+
 /**
  * $context = leave/expired/join/signup
  */
@@ -327,7 +359,7 @@ function wpms_user_notify($user, $context): bool
 
     foreach ($communications as $comm) {
         UtilEnv::safe_time_limit(20, 120);
-        $res &= wp_mail($user->user_email, TextReplacer::replace($comm->subject), TextReplacer::replace($comm->message));
+        $res &= wp_mail($user->user_email, TextReplacer::replace($comm->subject, $user), TextReplacer::replace($comm->message, $user));
     }
 
     return (bool)$res;

@@ -13,7 +13,7 @@ use WPS\core\wps_wrapper;
  * WordPress Speeder
  * 2.0.0
  */
-const WPS_VERSION = "2.0.0";
+const WPS_VERSION = "2.0.1";
 const WPS_DEBUG = false;
 const WPS_SALT = "#0b1b#2a4d2ce76ee3ac41021dda6cd#";
 const WPS_FRAMEWORK = __DIR__ . '/';
@@ -28,7 +28,9 @@ require_once WPS_FRAMEWORK . 'functions/autoload.php';
 require_once WPS_FRAMEWORK . 'wps_wrapper.php';
 
 require_once WPS_FRAMEWORK . 'Query.class.php';
-require_once WPS_FRAMEWORK . 'Actions.class.php';
+require_once WPS_FRAMEWORK . 'RequestActions.class.php';
+require_once WPS_FRAMEWORK . 'CronActions.class.php';
+require_once WPS_FRAMEWORK . 'Ajax.class.php';
 require_once WPS_FRAMEWORK . 'StringHelper.class.php';
 require_once WPS_FRAMEWORK . 'TextReplacer.class.php';
 require_once WPS_FRAMEWORK . 'Utility.class.php';
@@ -41,8 +43,7 @@ require_once WPS_FRAMEWORK . 'Disk.class.php';
 require_once WPS_FRAMEWORK . 'Settings.class.php';
 require_once WPS_FRAMEWORK . 'Options.class.php';
 
-require_once WPS_FRAMEWORK . 'Ajax.class.php';
-require_once WPS_FRAMEWORK . 'Cron.class.php';
+require_once WPS_FRAMEWORK . 'CronForModules.php';
 
 require_once WPS_FRAMEWORK . 'Graphic.class.php';
 
@@ -52,6 +53,9 @@ require_once WPS_FRAMEWORK . 'Module.class.php';
 require_once WPS_FRAMEWORK . 'ModuleHandler.class.php';
 
 add_action('admin_enqueue_scripts', 'wps_admin_enqueue_scripts', 10, 0);
+
+\WPS\core\CronActions::Initialize();
+
 
 function wps_admin_enqueue_scripts(): void
 {

@@ -60,7 +60,8 @@ class TextReplacer
 
             if ($replace = self::replace_custom($rule, $object, $type)) {
                 $replacement = $replace;
-            }elseif ($replace = self::replace_property($rule, $object, $type)) {
+            }
+            elseif ($replace = self::replace_property($rule, $object, $type)) {
                 $replacement = $replace;
             }
             elseif ($replace = self::replace_meta($rule, $object, $type)) {
@@ -190,6 +191,12 @@ class TextReplacer
 
             case 'title':
                 $res = wpfs_document_title(wps('wpfs')->settings->get('seo.title.separator', '-'));
+                break;
+
+            case 'userdisplayname':
+                if ($object instanceof \WP_User) {
+                    $res = $object->display_name;
+                }
                 break;
 
             case 'sitedesc':

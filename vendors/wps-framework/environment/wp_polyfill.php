@@ -12,7 +12,6 @@ if (!function_exists('wp_doing_ajax')) {
     }
 }
 
-
 if (!function_exists('wp_doing_cron')) {
     function wp_doing_cron()
     {

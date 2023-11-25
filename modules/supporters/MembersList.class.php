@@ -12,8 +12,9 @@ if (!class_exists('WP_List_Table')) {
 }
 
 use WPMembership\core\Member;
-use WPS\core\Actions;
+use WPS\core\RequestActions;
 use WPS\core\Query;
+use WPS\core\UtilEnv;
 
 class MembersList extends \WP_List_Table
 {
@@ -51,12 +52,12 @@ class MembersList extends \WP_List_Table
         $row_actions = array();
 
         if ($member->get_sub()->is_valid()) {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'edit') . "&user_id=" . $member->get_user()->ID . "'>" . __('Edit', 'wpms') . "</a></span>";
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_hook, 'renew_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Renew', 'wpms') . "</a></span>";
-            $row_actions[] = "<span class='inline delete'><a href='" . Actions::get_url($this->action_hook, 'drop_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Drop', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_page_hook, 'edit') . "&user_id=" . $member->get_user()->ID . "'>" . __('Edit', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'renew_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Renew', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline delete'><a href='" . RequestActions::get_url($this->action_hook, 'drop_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Drop', 'wpms') . "</a></span>";
         }
         else {
-            $row_actions[] = "<span class='inline'><a href='" . Actions::get_url($this->action_page_hook, 'add') . "&user_id=" . $member->get_user()->ID . "'>" . __('Add', 'wpms') . "</a></span>";
+            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_page_hook, 'add') . "&user_id=" . $member->get_user()->ID . "'>" . __('Add', 'wpms') . "</a></span>";
         }
 
         $output .= '<br><div class="row-actions">' . implode(' | ', $row_actions) . '</div>';

@@ -15,7 +15,7 @@ class wps_wrapper
 
     public ?Settings $settings = null;
 
-    public ?Cron $cron = null;
+    public ?CronForModules $cron = null;
 
     public ?Ajax $ajax = null;
 
@@ -96,7 +96,7 @@ class wps_wrapper
         }
 
         if ($this->components['cron']) {
-            $this->cron = new Cron($this->context);
+            $this->cron = new CronForModules($this->context);
         }
     }
 
