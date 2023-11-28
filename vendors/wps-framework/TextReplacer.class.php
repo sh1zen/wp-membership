@@ -70,7 +70,7 @@ class TextReplacer
                 $replacement = $replace;
             }
             elseif ($wp_query and $replace = get_query_var($rule, false)) {
-                $replacement = $replace;
+                $replacement = esc_html($replace);
             }
             elseif ($replace = self::replace_static($rule, $object, $type)) {
                 $replacement = $replace;

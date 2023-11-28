@@ -381,7 +381,7 @@ function wpms_user_notify($user, $context, $clear_history = false): bool
     }
 
     if ($clear_history) {
-        Query::getInstance()->delete(['user_id' => $user->ID], WP_MEMBERSHIP_TABLE_COMMUNICATIONS_SENT)->query();
+        Query::getInstance()->delete(['user_id' => $member->get_user()->ID], WP_MEMBERSHIP_TABLE_COMMUNICATIONS_SENT)->query();
     }
 
     $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_COMMUNICATIONS);

@@ -356,7 +356,7 @@ class Query
 
                 if ($prx = $this->get_table_alias($maybe_table)) {
                     // handles table_name => [...]
-                    $parsed = [...$parsed, ...$this->parse_fields($field, true, $prx)];
+                    $parsed = [...$parsed, ...$this->parse_fields($field, true, $prx, $unquoted)];
                     continue;
                 }
 
