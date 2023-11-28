@@ -7,6 +7,8 @@
 
 namespace WPMembership\core;
 
+use WPS\core\Query;
+
 class MembershipSubscription
 {
     public int $id;
@@ -32,6 +34,52 @@ class MembershipSubscription
         $this->expirydate = $args['expirydate'] ?? '';
     }
 
+    public function time_left()
+    {
+        return max($this->end_time() - time(), 0);
+    }
+
+    public function end_time(): int
+    {
+        return (int)strtotime($this->expirydate) ?: 0;
+    }
+
+    public function gift_days(): int
+    {
+        if (!$this->is_valid()) {
+            return 0;
+        }
+
+        $query = Query::getInstance()->select('DATEDIFF(expirydate, startdate) AS date_difference', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+
+        $total_days = (int)$query->where(['user_id' => $this->user_id])->query_one();
+
+        return $total_days - wpms_get_level($this->level_id)->durationDays();
+    }
+
+    public function is_valid(): bool
+    {
+        return $this->id != 0;
+    }
+
+    public function expirydate($offset = false)
+    {
+        if (!$this->is_valid()) {
+            return '0000-00-00 00:00:00';
+        }
+
+        if ($offset === false) {
+            return $this->expirydate;
+        }
+
+        return wp_date('Y-m-d H:i:s', $this->start_time() + $this->get_level()->duration + $offset);
+    }
+
+    public function start_time(): int
+    {
+        return (int)strtotime($this->startdate) ?: 0;
+    }
+
     public function get_level(): ?MembershipLevel
     {
         if (!$this->level) {
@@ -41,23 +89,8 @@ class MembershipSubscription
         return $this->level;
     }
 
-    public function time_left()
+    public function is_suspended(): bool
     {
-        return max($this->end_time() - time(), 0);
-    }
-
-    public function is_valid(): bool
-    {
-        return $this->id != 0;
-    }
-
-    public function start_time(): int
-    {
-        return (int)strtotime($this->startdate) ?: 0;
-    }
-
-    public function end_time(): int
-    {
-        return (int)strtotime($this->expirydate) ?: 0;
+        return $this->is_valid() and empty($this->expirydate);
     }
 }

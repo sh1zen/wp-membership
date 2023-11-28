@@ -20,6 +20,7 @@ function wpms_setup_db_table_constants(): void
     define('WP_MEMBERSHIP_TABLE_HISTORY', "{$wpdb->prefix}membership_history");
     define('WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS', "{$wpdb->prefix}membership_subscriptions");
     define('WP_MEMBERSHIP_TABLE_COMMUNICATIONS', "{$wpdb->prefix}membership_communications");
+    define('WP_MEMBERSHIP_TABLE_COMMUNICATIONS_SENT', "{$wpdb->prefix}membership_communications_sent");
 }
 
 wpms_setup_db_table_constants();

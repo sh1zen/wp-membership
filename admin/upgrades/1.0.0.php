@@ -31,8 +31,9 @@ WPS\core\UtilEnv::db_create(
             "id"         => "BIGINT NOT NULL AUTO_INCREMENT",
             "user_id"    => "BIGINT NOT NULL",
             "level_id"   => "BIGINT NOT NULL DEFAULT 0",
+            "status"     => "VARCHAR(255) DEFAULT 'active'", // suspended
             "startdate"  => "DATETIME DEFAULT CURRENT_TIMESTAMP",
-            "expirydate" => "DATETIME DEFAULT '0000-00-00 00:00:00'",
+            "expirydate" => "DATETIME DEFAULT NULL",
         ],
         "primary_key" => "id"
     ],
@@ -56,6 +57,22 @@ WPS\core\UtilEnv::db_create(
     ],
     true
 );
+
+WPS\core\UtilEnv::db_create(
+    WP_MEMBERSHIP_TABLE_COMMUNICATIONS_SENT,
+    [
+        "fields"      => [
+            "id"        => "BIGINT NOT NULL AUTO_INCREMENT",
+            "user_id"   => "BIGINT NOT NULL",
+            "comm_id"   => "BIGINT NOT NULL",
+            "timestamp" => "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        ],
+        "primary_key" => "id"
+    ],
+    true
+);
+$wpdb->query("ALTER TABLE " . WP_MEMBERSHIP_TABLE_COMMUNICATIONS_SENT . " ADD INDEX `idx_user_id` (`user_id`) USING BTREE;");
+$wpdb->query("ALTER TABLE " . WP_MEMBERSHIP_TABLE_COMMUNICATIONS_SENT . " ADD INDEX `idx_comm_id` (`comm_id`) USING BTREE;");
 
 WPS\core\UtilEnv::db_create(
     WP_MEMBERSHIP_TABLE_HISTORY,

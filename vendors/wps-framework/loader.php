@@ -13,7 +13,7 @@ use WPS\core\wps_wrapper;
  * WordPress Speeder
  * 2.0.0
  */
-const WPS_VERSION = "2.0.1";
+const WPS_VERSION = "2.0.2";
 const WPS_DEBUG = false;
 const WPS_SALT = "#0b1b#2a4d2ce76ee3ac41021dda6cd#";
 const WPS_FRAMEWORK = __DIR__ . '/';

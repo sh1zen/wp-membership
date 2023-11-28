@@ -51,9 +51,17 @@ class MembersList extends \WP_List_Table
 
         $row_actions = array();
 
-        if ($member->get_sub()->is_valid()) {
+        if ($member->has_subscription()) {
             $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_page_hook, 'edit') . "&user_id=" . $member->get_user()->ID . "'>" . __('Edit', 'wpms') . "</a></span>";
-            $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'renew_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Renew', 'wpms') . "</a></span>";
+
+            if ($member->is_suspended()) {
+                $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'resume_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Resume', 'wpms') . "</a></span>";
+            }
+            else {
+                $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'renew_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Renew', 'wpms') . "</a></span>";
+                $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'suspend_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Suspend', 'wpms') . "</a></span>";
+            }
+
             $row_actions[] = "<span class='inline delete'><a href='" . RequestActions::get_url($this->action_hook, 'drop_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Drop', 'wpms') . "</a></span>";
         }
         else {
@@ -236,10 +244,15 @@ class MembersList extends \WP_List_Table
                 break;
 
             case 'expire':
-                if ($expire = $item->get_sub()->end_time()) {
-                    $expire = date("Y-m-d H:i", $expire);
+                if ($item->get_sub()->is_suspended()) {
+                    $return = "<span>" . __('Suspended', 'wpms') . "</span>";
                 }
-                $return = "<span>" . ($expire ?: __('No', 'wpms')) . "</span>";
+                else {
+                    if ($expire = $item->get_sub()->end_time()) {
+                        $expire = date("Y-m-d H:i", $expire);
+                    }
+                    $return = "<span>" . ($expire ?: __('No', 'wpms')) . "</span>";
+                }
                 break;
 
             case 'renew_count':
@@ -286,14 +299,16 @@ class MembersList extends \WP_List_Table
         );
 
         if (!empty($request['filter_level'])) {
-            $query->where(['level_id' => $request['filter_level']], 'AND', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
-        }
-        elseif ($request['filter_level'] == '0') {
-            $query->where(
-                ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
-                'AND',
-                $query->wpdb()->users
-            );
+            if ($request['filter_level'] == '0') {
+                $query->where(
+                    ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
+                    'AND',
+                    $query->wpdb()->users
+                );
+            }
+            else {
+                $query->where(['level_id' => $request['filter_level']], 'AND', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
+            }
         }
 
         if (!empty($request['filter_role'])) {

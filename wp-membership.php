@@ -48,7 +48,7 @@ wps(
 // load workers
 require_once WPMS_INCPATH . 'constants.php';
 require_once WPMS_INCPATH . 'functions.php';
-require_once WPMS_INCPATH . 'cron.php';
+require_once WPMS_INCPATH . 'actions.php';
 
 // initializer class
 require_once WPMS_ADMIN . 'PluginInit.class.php';

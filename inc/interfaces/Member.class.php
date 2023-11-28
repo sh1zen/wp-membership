@@ -34,10 +34,15 @@ class Member
     public function on_sub($level = false): bool
     {
         if (!$level) {
-            return $this->get_sub()->is_valid();
+            return $this->has_subscription();
         }
 
         return is_numeric($level) ? $this->get_sub()->level_id == $level : $this->get_sub()->get_level()->slug == $level;
+    }
+
+    public function has_subscription(): bool
+    {
+        return $this->get_sub()->is_valid();
     }
 
     public function get_sub(): ?MembershipSubscription
@@ -46,6 +51,11 @@ class Member
             $this->subscription = wpms_user_get_subscription($this->user);
         }
         return $this->subscription;
+    }
+
+    public function get_level(): ?MembershipLevel
+    {
+        return $this->get_sub()->get_level();
     }
 
     public function get_user(): ?\WP_User
@@ -79,5 +89,15 @@ class Member
         }
 
         return (float)$historyQuery->query(true) ?: 0;
+    }
+
+    public function is_suspended(): bool
+    {
+        return $this->get_sub()->is_suspended();
+    }
+
+    public function gift_days(): int
+    {
+        return $this->get_sub()->gift_days();
     }
 }

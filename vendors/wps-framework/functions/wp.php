@@ -7,13 +7,17 @@
 
 use WPS\core\UtilEnv;
 
-function wps_time($format = 'timestamp', $offset = 0, $zoned = true)
+function wps_time($format = 'timestamp', $offset = 0, $zoned = true, $basetime = false)
 {
     if ($format === 'zero') {
         return '0000-00-00 00:00:00';
     }
 
-    $time = time() + intval($offset);
+    if (!$basetime) {
+        $basetime = time();
+    }
+
+    $time = $basetime + intval($offset);
 
     if ('timestamp' === $format || 'U' === $format) {
         return $time;
@@ -39,11 +43,11 @@ function wps_str_to_time(string $timestamp, $gmt = true)
 
 function wps_get_user($user): ?WP_User
 {
-    if (is_string($user) and is_email($user)) {
-        $user = get_user_by('email', $user);
-    }
-    elseif (is_numeric($user)) {
+    if (is_numeric($user)) {
         $user = get_user_by('id', $user);
+    }
+    elseif (is_string($user) and is_email($user)) {
+        $user = get_user_by('email', $user);
     }
     elseif (!$user instanceof WP_User) {
         $user = new WP_User($user);
@@ -74,6 +78,69 @@ function wps_get_term($term, $taxonomy = '', $output = OBJECT, $filter = 'raw'):
     }
 
     return $term instanceof WP_Term ? $term : null;
+}
+
+function wps_get_user_meta($user_id, $field, $default = false, $single = true)
+{
+    if (!is_numeric($user_id)) {
+
+        $user = wps_get_user($user_id);
+
+        if (!$user) {
+            return $default;
+        }
+
+        $user_id = $user->ID;
+    }
+
+    $value = get_metadata_raw('user', $user_id, $field, $single);
+
+    if (!is_null($value)) {
+        return maybe_unserialize($value);
+    }
+
+    return $default;
+}
+
+function wps_get_post_meta($meta_key, $default = '', $post_id = 0, $single = true)
+{
+    global $post;
+
+    if (!$post_id) {
+
+        if (!$post) {
+            return $default;
+        }
+
+        $post_id = $post->ID;
+    }
+
+    $value = get_metadata_raw('post', $post_id, $meta_key, $single);
+
+    if (!is_null($value)) {
+        return maybe_unserialize($value);
+    }
+
+    return $default;
+}
+
+function wps_get_term_meta($meta_key, $default = '', $term_id = 0, $single = true)
+{
+    global $term;
+
+    $term = wps_get_term($term_id ?: $term);
+
+    if (!$term) {
+        return $default;
+    }
+
+    $value = get_metadata_raw('term', $term->term_id, $meta_key, $single);
+
+    if (!is_null($value)) {
+        return maybe_unserialize($value);
+    }
+
+    return $default;
 }
 
 function wps_convert_to_javascript_object(array $arr, $sequential_keys = false, $quotes = false, $beautiful_json = false): string

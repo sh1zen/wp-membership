@@ -33,6 +33,8 @@ class TextReplacer
      */
     public static function replace(string $string, $object = null, string $type = 'post'): string
     {
+        global $wp_query;
+
         if (empty($string)) {
             return '';
         }
@@ -67,7 +69,7 @@ class TextReplacer
             elseif ($replace = self::replace_meta($rule, $object, $type)) {
                 $replacement = $replace;
             }
-            elseif ($replace = get_query_var($rule, false)) {
+            elseif ($wp_query and $replace = get_query_var($rule, false)) {
                 $replacement = $replace;
             }
             elseif ($replace = self::replace_static($rule, $object, $type)) {

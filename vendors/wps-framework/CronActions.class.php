@@ -104,7 +104,7 @@ class CronActions
             $timestamp = time();
         }
 
-        $timestamp = is_string($timestamp) ? wps_str_to_time($timestamp) : absint($timestamp);
+        $timestamp = is_string($timestamp) ? \wps_str_to_time($timestamp) : absint($timestamp);
 
         if ($interval and $timestamp < time()) {
             // check if next schedule is before current time

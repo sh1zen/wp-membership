@@ -10,14 +10,13 @@ namespace WPMembership\modules;
 use WPS\core\RequestActions;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
-use WPS\core\Query;
 use WPS\modules\Module;
 
 use WPMembership\modules\supporters\MembersList;
 
 class Mod_Members extends Module
 {
-    public array $scopes = array('admin-page',  'admin');
+    public array $scopes = array('admin-page', 'admin');
 
     protected string $context = 'wpms';
 
@@ -32,7 +31,19 @@ class Mod_Members extends Module
                 case 'update_sub':
                 case 'add_new_sub':
                     $request = $_REQUEST['membership'];
-                    $response = wpms_membership_update($request['user_id'], $request['level_id'], $request['paid']);
+
+                    if ($request['level_id'] == 0) {
+                        $response = wpms_membership_drop($request['user_id']);
+                    }
+                    else {
+                        $response = wpms_membership_update($request['user_id'], $request['level_id'], $request['paid']);
+                        wpms_membership_extend($request['user_id'], $request['gift_days']);
+                    }
+                    break;
+
+                case 'resume_sub':
+                case 'suspend_sub':
+                    $response = wpms_membership_suspend($_REQUEST['user_id']);
                     break;
 
                 case 'drop_sub':
@@ -62,14 +73,7 @@ class Mod_Members extends Module
                         if (strtolower($_REQUEST['bulk-action']) == 'drop') {
                             $response = true;
                             foreach ($user_ids as $user_id) {
-                                $user = wps_get_user($user_id);
-                                $response &= wpms_membership_drop($user);
-                                if ($response) {
-                                    wpms_user_notify($user, 'drop');
-                                }
-                                else {
-                                    break;
-                                }
+                                wpms_membership_drop($user_id);
                             }
                         }
                     }
@@ -118,16 +122,14 @@ class Mod_Members extends Module
             return '<strong>' . __('Not valid User ID was passed.', 'wpms') . '</strong>';
         }
 
-        $current_sub = wpms_user_get_subscription($user);
+        $member = wpms_get_member($user);
 
         $defaults = [
-            'level_id' => $current_sub->level_id,
-            'level'    => [__("None", 'wpms') => 0]
+            'level_id'  => $member->get_sub()->level_id,
+            'level'     => [__("None", 'wpms') => 0],
+            'paid'      => $member->get_pays(),
+            'gift_days' => $member->gift_days()
         ];
-
-        $defaults['paid'] = $defaults['level_id'] ? Query::getInstance()->select('paid', WP_MEMBERSHIP_TABLE_HISTORY)->where(
-            ['level_id' => $defaults['level_id'], 'user_id' => $user->ID]
-        )->orderby('id', 'DESC')->limit(1)->query(true) : 0;
 
         ob_start();
         ?>
@@ -150,6 +152,7 @@ class Mod_Members extends Module
                         'list'  => $subscriptions
                     ]),
                     $this->setting_field(__('Paid', 'wpms'), 'paid', 'number', ['value' => $defaults['paid']]),
+                    $this->setting_field(__('Gift Days', 'wpms'), 'gift_days', 'number', ['value' => $defaults['gift_days']]),
                 ),
             );
 
@@ -159,7 +162,7 @@ class Mod_Members extends Module
             <row class="wps-custom-action wps-row">
                 <?php
                 echo "<input type='hidden' name='membership[user_id]' value='" . esc_attr($user->ID) . "'>";
-                if ($current_sub->id) {
+                if ($member->has_subscription()) {
                     echo RequestActions::get_action_button($this->action_hook, 'update_sub', __('Update', 'wpms'), 'button-primary');
                 }
                 else {

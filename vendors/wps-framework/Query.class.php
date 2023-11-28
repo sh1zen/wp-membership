@@ -195,14 +195,14 @@ class Query
             if ($this->action === 'INSERT') {
                 $this->action = 'UPDATE';
                 if (isset($this->values[0])) {
-                    $values = implode(', ', $this->parse_fields($this->values[0], false));
+                    $values = implode(', ', $this->parse_fields($this->values[0], false, '', true));
                 }
             }
         }
 
         if ($this->action === 'INSERT') {
             foreach ($this->values as $tuple) {
-                $values[] = "'" . implode("','", wps_array_sort($tuple, $columns)) . "'";
+                $values[] = implode(", ", wps_array_sort($tuple, $columns));
             }
             $values = implode('), (', $values);
         }
@@ -741,7 +741,7 @@ class Query
             }
         }
 
-        $this->values[] = array_map('esc_sql', $values);
+        $this->values[] = array_map('esc_sql', array_map('maybe_serialize', $values));
 
         return $this;
     }
@@ -759,7 +759,7 @@ class Query
      * [[key => value]]
      * [key => value]
      */
-    public function insert(array $fields): Query
+    public function insert(array $fields, $quoted = true): Query
     {
         $this->use_reference = false;
         $this->action('insert');
@@ -774,6 +774,7 @@ class Query
                 $this->columns($column, '', true);
             }
 
+            // fixes for multi insertion not sequential
             while (!isset($this->values[$lastEmpty][$column]) and $lastEmpty >= 0) {
                 $lastEmpty--;
             }
@@ -783,7 +784,13 @@ class Query
                 $this->values[$lastEmpty] = [];
             }
 
-            $this->values[$lastEmpty][$column] = maybe_serialize($value);
+            $value = maybe_serialize($value);
+
+            if ($quoted) {
+                $value = "'$value'";
+            }
+
+            $this->values[$lastEmpty][$column] = $value;
         }
 
         return $this;

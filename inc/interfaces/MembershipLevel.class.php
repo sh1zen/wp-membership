@@ -39,9 +39,9 @@ class MembershipLevel
         $this->active = UtilEnv::to_boolean($args['active'] ?? false);
     }
 
-    public function duration(): array
+    public function durationDays(): int
     {
-        return UtilEnv::convertSecondsToDuration($this->duration);
+        return (int)$this->duration / DAY_IN_SECONDS;
     }
 
     public function count(): int

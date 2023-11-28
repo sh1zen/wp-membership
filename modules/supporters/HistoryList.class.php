@@ -112,7 +112,7 @@ class HistoryList extends \WP_List_Table
 
     public function get_items($use_limit = false)
     {
-        $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_HISTORY)->output(ARRAY_A);
+        $query = Query::getInstance(ARRAY_A)->tables(WP_MEMBERSHIP_TABLE_HISTORY);
 
         $offset = ($this->get_pagenum() - 1) * 25;
 
@@ -125,7 +125,7 @@ class HistoryList extends \WP_List_Table
 
     public function prepare_items()
     {
-        $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_HISTORY);
+        $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_HISTORY)->orderby('timestamp', 'DESC');
 
         $this->_column_headers = array($this->get_columns(), [], $this->get_sortable_columns(), $this->get_primary_column_name());
 

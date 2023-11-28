@@ -42,6 +42,8 @@ class LevelsList extends \WP_List_Table
 
     public function column_title($item)
     {
+        $item = new MembershipLevel($item);
+
         $edit_link = RequestActions::get_url($this->action_page_hook, 'edit') . "&level_id=$item->id";
 
         $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . esc_html($item->title) . '</a></strong>';
@@ -148,6 +150,8 @@ class LevelsList extends \WP_List_Table
 
     public function column_default($item, $column_name)
     {
+        $item = new MembershipLevel($item);
+
         switch ($column_name) {
 
             case 'id':
@@ -164,7 +168,7 @@ class LevelsList extends \WP_List_Table
 
             case 'duration':
                 $return = '';
-                foreach ($item->duration() as $item => $value) {
+                foreach (UtilEnv::convertSecondsToDuration($item->duration) as $item => $value) {
                     $return .= "$value $item ";
                 }
                 break;
@@ -255,9 +259,7 @@ class LevelsList extends \WP_List_Table
 
         $total_items = $query->action('select')->columns('COUNT(*)')->query(true);
 
-        foreach ($query->limit(25)->offset($offset)->columns('*')->recompile()->query() as $item){
-            $this->items[] = new MembershipLevel($item);
-        }
+        $this->items[] = $query->limit(25)->offset($offset)->columns('*')->recompile()->query();
 
         $this->set_pagination_args(array(
             'total_items' => $total_items,
