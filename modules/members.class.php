@@ -50,10 +50,6 @@ class Mod_Members extends Module
                     $response = wpms_membership_drop($_REQUEST['user_id']);
                     break;
 
-                case 'renew_sub':
-                    $response = wpms_membership_renew($_REQUEST['user_id']);
-                    break;
-
                 case 'export':
                     require_once WPS_ADDON_PATH . 'Exporter.class.php';
                     require_once WPMS_SUPPORTERS . 'MembersList.class.php';

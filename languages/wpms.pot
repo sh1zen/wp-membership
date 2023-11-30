@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: wpms-translation\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-"
 "optimizer/\n"
-"POT-Creation-Date: 2023-11-28 15:30+0100\n"
+"POT-Creation-Date: 2023-11-30 12:28+0100\n"
 "PO-Revision-Date: 2020-05-13 02:34+0200\n"
 "Last-Translator: sh1zen\n"
 "Language-Team: sh1zen\n"
@@ -74,12 +74,12 @@ msgid "Buy me a beer"
 msgstr ""
 
 #: modules/communications.class.php:107 modules/levels.class.php:101
-#: modules/members.class.php:84 modules/settings.class.php:73
+#: modules/members.class.php:80 modules/settings.class.php:73
 msgid "Action was correctly executed"
 msgstr ""
 
 #: modules/communications.class.php:107 modules/levels.class.php:101
-#: modules/members.class.php:84 modules/settings.class.php:76
+#: modules/members.class.php:80 modules/settings.class.php:76
 msgid "Action execution failed"
 msgstr ""
 
@@ -88,7 +88,7 @@ msgid "Communications"
 msgstr ""
 
 #: modules/communications.class.php:130 modules/history.class.php:32
-#: modules/levels.class.php:122 modules/members.class.php:104
+#: modules/levels.class.php:122 modules/members.class.php:100
 msgid "List"
 msgstr ""
 
@@ -142,24 +142,26 @@ msgstr ""
 #: modules/communications.class.php:220
 #: modules/communications.class.php:223 modules/levels.class.php:158
 #: modules/levels.class.php:165 modules/levels.class.php:198
+#: vendors/wps-framework/UtilEnv.php:234
 msgid "Day"
 msgstr ""
 
 #: modules/communications.class.php:182
 #: modules/communications.class.php:221 modules/levels.class.php:163
 #: modules/levels.class.php:195 modules/levels.class.php:196
+#: vendors/wps-framework/UtilEnv.php:232
 msgid "Year"
 msgstr ""
 
 #: modules/communications.class.php:183
 #: modules/communications.class.php:222 modules/levels.class.php:164
-#: modules/levels.class.php:197
+#: modules/levels.class.php:197 vendors/wps-framework/UtilEnv.php:233
 msgid "Month"
 msgstr ""
 
 #: modules/communications.class.php:185
 #: modules/communications.class.php:224 modules/levels.class.php:166
-#: modules/levels.class.php:199
+#: modules/levels.class.php:199 vendors/wps-framework/UtilEnv.php:235
 msgid "Hour"
 msgstr ""
 
@@ -200,11 +202,12 @@ msgid "All"
 msgstr ""
 
 #: modules/communications.class.php:242 modules/levels.class.php:206
+#: vendors/wps-framework/CronForModules.php:80
 msgid "Active"
 msgstr ""
 
 #: modules/communications.class.php:252 modules/levels.class.php:217
-#: modules/members.class.php:166
+#: modules/members.class.php:162
 msgid "Update"
 msgstr ""
 
@@ -260,33 +263,33 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: modules/members.class.php:95
+#: modules/members.class.php:91
 msgid "Edit Members"
 msgstr ""
 
-#: modules/members.class.php:122
+#: modules/members.class.php:118
 msgid "Not valid User ID was passed."
 msgstr ""
 
-#: modules/members.class.php:129 modules/members.class.php:139
+#: modules/members.class.php:125 modules/members.class.php:135
 #: modules/supporters/MembersList.class.php:48
-#: modules/supporters/MembersList.class.php:263
+#: modules/supporters/MembersList.class.php:262
 msgid "None"
 msgstr ""
 
-#: modules/members.class.php:150
+#: modules/members.class.php:146
 msgid "Add Subscription"
 msgstr ""
 
-#: modules/members.class.php:154
+#: modules/members.class.php:150
 msgid "Paid"
 msgstr ""
 
-#: modules/members.class.php:155
+#: modules/members.class.php:151
 msgid "Gift Days"
 msgstr ""
 
-#: modules/members.class.php:169
+#: modules/members.class.php:165
 msgid "Subscribe"
 msgstr ""
 
@@ -324,7 +327,7 @@ msgstr ""
 #: modules/supporters/CommunicationList.class.php:52
 #: modules/supporters/LevelsList.class.php:53
 #: modules/supporters/MembersList.class.php:55
-#: modules/supporters/MembersList.class.php:85
+#: modules/supporters/MembersList.class.php:84
 msgid "Edit"
 msgstr ""
 
@@ -339,7 +342,7 @@ msgstr ""
 #: modules/supporters/CommunicationList.class.php:288
 #: modules/supporters/LevelsList.class.php:59
 #: modules/supporters/LevelsList.class.php:296
-#: modules/supporters/MembersList.class.php:62
+#: modules/supporters/MembersList.class.php:61
 msgid "Suspend"
 msgstr ""
 
@@ -356,15 +359,15 @@ msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:73
 #: modules/supporters/LevelsList.class.php:72
-#: modules/supporters/MembersList.class.php:96
+#: modules/supporters/MembersList.class.php:95
 msgid "Search"
 msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:116
 #: modules/supporters/LevelsList.class.php:115
-#: modules/supporters/MembersList.class.php:182
-#: modules/supporters/MembersList.class.php:192
-#: modules/supporters/MembersList.class.php:203
+#: modules/supporters/MembersList.class.php:181
+#: modules/supporters/MembersList.class.php:191
+#: modules/supporters/MembersList.class.php:202
 msgid "Filter"
 msgstr ""
 
@@ -383,20 +386,20 @@ msgstr ""
 #: modules/supporters/CommunicationList.class.php:140
 #: modules/supporters/HistoryList.class.php:71
 #: modules/supporters/LevelsList.class.php:139
-#: modules/supporters/MembersList.class.php:220
+#: modules/supporters/MembersList.class.php:219
 msgid "Export File Format"
 msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:147
 #: modules/supporters/HistoryList.class.php:78
 #: modules/supporters/LevelsList.class.php:146
-#: modules/supporters/MembersList.class.php:227
+#: modules/supporters/MembersList.class.php:226
 msgid "Export Data"
 msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:270
 #: modules/supporters/HistoryList.class.php:149
-#: modules/supporters/MembersList.class.php:366
+#: modules/supporters/MembersList.class.php:365
 msgid "Subscription"
 msgstr ""
 
@@ -415,19 +418,19 @@ msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:313
 #: modules/supporters/LevelsList.class.php:319
-#: modules/supporters/MembersList.class.php:138
+#: modules/supporters/MembersList.class.php:137
 msgid "Select bulk action"
 msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:315
 #: modules/supporters/LevelsList.class.php:321
-#: modules/supporters/MembersList.class.php:140
+#: modules/supporters/MembersList.class.php:139
 msgid "Bulk actions"
 msgstr ""
 
 #: modules/supporters/CommunicationList.class.php:337
 #: modules/supporters/LevelsList.class.php:343
-#: modules/supporters/MembersList.class.php:162
+#: modules/supporters/MembersList.class.php:161
 msgid "Apply"
 msgstr ""
 
@@ -492,78 +495,160 @@ msgstr ""
 msgid "Resume"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:61
-msgid "Renew"
-msgstr ""
-
-#: modules/supporters/MembersList.class.php:65
+#: modules/supporters/MembersList.class.php:64
 msgid "Drop"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:68
+#: modules/supporters/MembersList.class.php:67
 msgid "Add"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:176
+#: modules/supporters/MembersList.class.php:175
 msgid "Filter by subscription"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:177
+#: modules/supporters/MembersList.class.php:176
 msgid "View Inactive Users"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:187
+#: modules/supporters/MembersList.class.php:186
 msgid "Filter by User Role"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:197
+#: modules/supporters/MembersList.class.php:196
 msgid "Filter Expiring"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:198
+#: modules/supporters/MembersList.class.php:197
 msgid "7 Days"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:199
+#: modules/supporters/MembersList.class.php:198
 msgid "30 Days"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:200
+#: modules/supporters/MembersList.class.php:199
 msgid "60 Days"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:201
+#: modules/supporters/MembersList.class.php:200
 msgid "90 Days"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:248
+#: modules/supporters/MembersList.class.php:247
 msgid "Suspended"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:254
+#: modules/supporters/MembersList.class.php:253
 msgid "No"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:363
+#: modules/supporters/MembersList.class.php:362
 msgid "Username"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:364
+#: modules/supporters/MembersList.class.php:363
 msgid "Name"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:365
+#: modules/supporters/MembersList.class.php:364
 msgid "E-mail"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:367
+#: modules/supporters/MembersList.class.php:366
 msgid "Expire"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:368
+#: modules/supporters/MembersList.class.php:367
 msgid "Renew / Payments"
 msgstr ""
 
-#: modules/supporters/MembersList.class.php:381
+#: modules/supporters/MembersList.class.php:380
 msgid "No Users found."
+msgstr ""
+
+#: vendors/wps-framework/Ajax.class.php:47
+#: vendors/wps-framework/Ajax.class.php:65
+#: vendors/wps-framework/RequestActions.class.php:42
+#: vendors/wps-framework/RequestActions.class.php:58
+msgid "It seems that you are not allowed to do this request."
+msgstr ""
+
+#: vendors/wps-framework/Ajax.class.php:48
+#: vendors/wps-framework/Ajax.class.php:66
+#: vendors/wps-framework/Ajax.class.php:76
+#: vendors/wps-framework/Module.class.php:257
+#: vendors/wps-framework/RequestActions.class.php:43
+#: vendors/wps-framework/RequestActions.class.php:59
+msgid "Request error"
+msgstr ""
+
+#: vendors/wps-framework/Ajax.class.php:75
+msgid "Wrong ajax request."
+msgstr ""
+
+#: vendors/wps-framework/CronForModules.php:81
+msgid "Execution Time"
+msgstr ""
+
+#: vendors/wps-framework/CronForModules.php:82
+msgid "Schedule"
+msgstr ""
+
+#: vendors/wps-framework/Graphic.class.php:387
+msgid "Choose a type or enter one manually."
+msgstr ""
+
+#: vendors/wps-framework/Module.class.php:76
+msgid "A context must be set"
+msgstr ""
+
+#: vendors/wps-framework/Module.class.php:256
+#, php-format
+msgid "Wrong ajax request for %s"
+msgstr ""
+
+#: vendors/wps-framework/Module.class.php:299
+msgid "Save Changes"
+msgstr ""
+
+#: vendors/wps-framework/Module.class.php:327
+msgid "This Module is disabled for you or for your settings."
+msgstr ""
+
+#: vendors/wps-framework/RequestActions.class.php:59
+msgid "Request response"
+msgstr ""
+
+#: vendors/wps-framework/Settings.class.php:151
+msgid "Core Settings"
+msgstr ""
+
+#: vendors/wps-framework/Settings.class.php:210
+msgid "Modules Settings"
+msgstr ""
+
+#: vendors/wps-framework/Settings.class.php:217
+#, php-format
+msgid "No modules enabled. To enable them go <a href='%s'>here</a>."
+msgstr ""
+
+#: vendors/wps-framework/UtilEnv.php:232
+msgid "Years"
+msgstr ""
+
+#: vendors/wps-framework/UtilEnv.php:233
+msgid "Months"
+msgstr ""
+
+#: vendors/wps-framework/UtilEnv.php:234
+msgid "Days"
+msgstr ""
+
+#: vendors/wps-framework/UtilEnv.php:235
+msgid "Hours"
+msgstr ""
+
+#: vendors/wps-framework/loader.php:70
+msgid "Are you sure you want to leave?"
 msgstr ""

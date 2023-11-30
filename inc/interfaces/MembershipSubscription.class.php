@@ -91,6 +91,6 @@ class MembershipSubscription
 
     public function is_suspended(): bool
     {
-        return $this->is_valid() and empty($this->expirydate);
+        return ($this->is_valid() and empty($this->expirydate));
     }
 }

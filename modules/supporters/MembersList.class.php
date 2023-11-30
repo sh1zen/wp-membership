@@ -58,7 +58,6 @@ class MembersList extends \WP_List_Table
                 $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'resume_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Resume', 'wpms') . "</a></span>";
             }
             else {
-                $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'renew_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Renew', 'wpms') . "</a></span>";
                 $row_actions[] = "<span class='inline'><a href='" . RequestActions::get_url($this->action_hook, 'suspend_sub') . "&user_id=" . $member->get_user()->ID . "'>" . __('Suspend', 'wpms') . "</a></span>";
             }
 
@@ -298,7 +297,7 @@ class MembersList extends \WP_List_Table
             $request['order'] ?? 'DESC'
         );
 
-        if (!empty($request['filter_level'])) {
+        if (isset($request['filter_level'])) {
             if ($request['filter_level'] == '0') {
                 $query->where(
                     ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
@@ -306,7 +305,7 @@ class MembersList extends \WP_List_Table
                     $query->wpdb()->users
                 );
             }
-            else {
+            elseif (!empty($request['filter_level'])) {
                 $query->where(['level_id' => $request['filter_level']], 'AND', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
             }
         }

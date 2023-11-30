@@ -214,40 +214,6 @@ function wpms_membership_update($user, $level_id, $paid = 0): bool
     return (bool)$res;
 }
 
-function wpms_membership_renew($user): bool
-{
-    $member = wpms_get_member($user);
-
-    if (!$member or !$member->has_subscription()) {
-        return false;
-    }
-
-    $level = $member->get_sub()->get_level();
-
-    $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS);
-    $query->where(['user_id' => $member->get_user()->ID])->insert(['startdate' => wps_time('mysql')])->insert(['expirydate' => wps_time('mysql', $level->duration)]);
-
-    $query->begin_transaction();
-
-    $res = $query->query();
-
-    $res &= wpms_register_update($member->get_user(), $level->id, 'leave');
-    $res &= wpms_register_update($member->get_user(), $level->id, 'join', $member->get_pays('last'));
-
-    if ($res) {
-        wpms_user_notify($member->get_user(), 'join', true);
-        $query->commit();
-    }
-    else {
-        $query->rollback();
-    }
-
-    wps('wpms')->cache->delete($member->get_user()->ID, 'user_subscription');
-    wps('wpms')->cache->delete($member->get_user()->ID, 'member');
-
-    return (bool)$res;
-}
-
 function wpms_membership_extend($user, $days = 0): bool
 {
     $member = wpms_get_member($user);
