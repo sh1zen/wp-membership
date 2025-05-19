@@ -1,7 +1,7 @@
 <?php
 /**
  * @author    sh1zen
- * @copyright Copyright (C) 2024.
+ * @copyright Copyright (C) 2025.
  * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
  */
 
@@ -375,7 +375,6 @@ class CronActions
         }
 
         foreach ($events as $id => $event) {
-
             if ($id and (is_closure($event['function']) or is_callable($event['function']))) {
                 add_action($id, $event['function'], 10, $event['accepted_args']);
             }
@@ -400,17 +399,15 @@ class CronActions
 
     public static function handle(string $hook, callable $callback): void
     {
-        add_action($hook, $callback);
+        add_action($hook, function () use ($callback) {
+            call_user_func($callback);
+        });
     }
 
     public function handleClosure(): void
     {
         if (is_callable($this->callback)) {
             call_user_func($this->callback, ...$this->args);
-        }
-
-        if (wps_core()->debug) {
-            wps_log("Cron execution:: $this->hook > $this->timestamp");
         }
     }
 }

@@ -3,7 +3,7 @@ Contributors: sh1zen
 Tags: membership
 Donate link: https://www.paypal.com/donate?business=dev.sh1zen%40outlook.it&item_name=Thank+you+in+advanced+for+the+kind+donations.+You+will+sustain+me+developing+WP-Membership.&currency_code=EUR
 Requires at least: 5.0.0
-Tested up to: 6.4
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GNU v3.0 License

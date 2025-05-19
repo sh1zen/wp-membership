@@ -9,6 +9,7 @@ namespace WPMembership\modules;
 
 use WPS\core\RequestActions;
 use WPS\core\Graphic;
+use WPS\core\StringHelper;
 use WPS\core\TextReplacer;
 use WPS\modules\Module;
 
@@ -38,8 +39,13 @@ class Mod_NewsLetter extends Module
 
                 $response = wps_multi_mail(
                     $users_email,
-                    TextReplacer::replace($_REQUEST['nwsl-subject']),
-                    TextReplacer::replace($_REQUEST['nwsl-message'])
+                    StringHelper::sanitize_text(
+                        TextReplacer::replace($_REQUEST['nwsl-subject'])
+                    ),
+                    StringHelper::sanitize_text(
+                        TextReplacer::replace($_REQUEST['nwsl-message']),
+                        true
+                    ),
                 );
             }
 
