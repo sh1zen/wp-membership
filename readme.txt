@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/donate?business=dev.sh1zen%40outlook.it&item
 Requires at least: 5.0.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.0.1
+Stable tag: 1.0.3
 License: GPLv2 or later
 
 The ultimate WordPress solution to manage, protect, and grow your members with powerful levels, access control, and developer-ready tools.

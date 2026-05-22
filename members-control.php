@@ -11,7 +11,7 @@
  * Version: 1.0.1
  */
 
-const WPMC_VERSION = '1.0.1';
+const WPMC_VERSION = '1.0.3';
 const WPMC_FILE = __FILE__;
 
 // load workers

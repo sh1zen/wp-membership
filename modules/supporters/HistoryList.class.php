@@ -38,13 +38,13 @@ class HistoryList extends \WP_List_Table
     public function display_tablenav($which)
     {
         ?>
-        <row class="tablenav <?php echo esc_attr($which); ?>">
-            <?php
-            $this->extra_tablenav($which);
-            $this->pagination($which);
-            ?>
+        <div class="tablenav <?php echo esc_attr($which); ?>">
+            <div class="wps-table-controls">
+                <?php $this->extra_tablenav($which); ?>
+            </div>
+            <?php $this->pagination($which); ?>
             <br class="clear"/>
-        </row>
+        </div>
         <?php
     }
 

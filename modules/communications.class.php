@@ -18,7 +18,7 @@ use WPMembership\modules\supporters\CommunicationList;
 
 class Mod_Communications extends Module
 {
-    public array $scopes = array('admin-page', 'admin');
+    public array $scopes = array('admin-page', 'admin', 'web-view');
 
     protected string $context = 'wpmc';
 
@@ -127,9 +127,10 @@ class Mod_Communications extends Module
                     echo Graphic::generateHTML_tabs_panels(array(
 
                         array(
-                            'id'        => 'wpmc-communications-list',
-                            'tab-title' => __('List', 'members-control'),
-                            'callback'  => array($this, 'render_list')
+                            'id'          => 'wpmc-communications-list',
+                            'tab-title'   => __('List', 'members-control'),
+                            'callback'    => array($this, 'render_list'),
+                            'panel-flush' => true
                         ),
                         array(
                             'id'        => 'wpmc-communications-new',
@@ -274,13 +275,11 @@ class Mod_Communications extends Module
 
         $table->prepare_items();
         ?>
-        <block class="wps-boxed--light">
-            <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
-                <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
-                <?php $table->display(); ?>
-                <?php RequestActions::nonce_field($this->action_hook); ?>
-            </form>
-        </block>
+        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form" autocomplete="off" autocapitalize="off">
+            <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
+            <?php $table->display(); ?>
+            <?php RequestActions::nonce_field($this->action_hook); ?>
+        </form>
         <?php
         return ob_get_clean();
     }

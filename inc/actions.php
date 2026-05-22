@@ -14,7 +14,7 @@ CronActions::schedule("WPMC-check-expired", HOUR_IN_SECONDS * 3, 'wpmc_drop_expi
 
 CronActions::schedule("WPMC-fix-tables", WEEK_IN_SECONDS, function () {
 
-    $user_ids = Query::getInstance()->where([
+    $user_ids = Query::getInstance()->where_unquoted([
         'user_id' => Query::getInstance()->select('ID', Query::getInstance()->wpdb()->users)->compile(),
         'compare' => 'NOT IN'
     ])->select('user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->query_multi() ?: [];

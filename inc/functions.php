@@ -96,7 +96,7 @@ function wpmc_subscription_get_users($level_id = 0): array
     }
     else {
         $query = Query::getInstance()->select('DISTINCT ID', $wpdb->users);
-        $query->where(['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN']);
+        $query->where_unquoted(['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN']);
     }
 
     $user_ids = $query->query_multi();
@@ -438,10 +438,12 @@ function wpmc_user_notify($user, $context, $clear_history = false): bool
             $headers[] = 'Bcc: ' . apply_filters('wpmc_admin_forward_mail', get_option('admin_email'));
         }
 
+        $message_with_br = preg_replace("/(\r\n|\n|\r)/", "<br>", $comm->message);
+
         $res = wp_mail(
             $member->get_user()->user_email,
             TextReplacer::replace($comm->subject, $member->get_user()),
-            TextReplacer::replace($comm->message, $member->get_user()),
+            TextReplacer::replace($message_with_br, $member->get_user()),
             $headers
         );
 

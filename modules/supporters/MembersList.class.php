@@ -97,22 +97,22 @@ class MembersList extends \WP_List_Table
 
     public function display_tablenav($which)
     {
-        if ('top' == $which) {
-            $this->search_box(__('Search', 'members-control'), 'wpmc-al-search');
-        }
         ?>
-        <row class="tablenav <?php echo esc_attr($which); ?>">
-            <?php if ($this->has_items()) : ?>
-                <row class="alignleft actions bulkactions">
-                    <?php $this->bulk_actions($which); ?>
-                </row>
+        <div class="tablenav <?php echo esc_attr($which); ?>">
+            <div class="wps-table-controls">
+                <?php if ($this->has_items() && !empty($this->get_bulk_actions())) : ?>
+                    <div class="alignleft actions bulkactions">
+                        <?php $this->bulk_actions($which); ?>
+                    </div>
+                <?php endif; ?>
+                <?php $this->extra_tablenav($which); ?>
+            </div>
+            <?php if ('top' == $which) : ?>
+                <?php $this->search_box(__('Search', 'members-control'), 'wpmc-al-search'); ?>
             <?php endif; ?>
-            <?php
-            $this->extra_tablenav($which);
-            $this->pagination($which);
-            ?>
+            <?php $this->pagination($which); ?>
             <br class="clear"/>
-        </row>
+        </div>
         <?php
     }
 
@@ -173,7 +173,6 @@ class MembersList extends \WP_List_Table
             $this->extra_tablenav_header();
         }
         elseif ('bottom' === $which) {
-            echo '<br>';
             $this->extra_tablenav_footer();
         }
     }
@@ -331,7 +330,7 @@ class MembersList extends \WP_List_Table
 
         if (isset($request['filter_level'])) {
             if ($request['filter_level'] == '0') {
-                $query->where(
+                $query->where_unquoted(
                     ['ID' => Query::getInstance()->select('DISTINCT user_id', WP_MEMBERSHIP_TABLE_SUBSCRIPTIONS)->compile(), 'compare' => 'NOT IN'],
                     'AND',
                     $query->wpdb()->users

@@ -86,8 +86,8 @@ class Mod_Settings extends Module
 
             <?php RequestActions::nonce_field($this->action_hook); ?>
 
-            <block class="wps-gridRow">
-                <row class="wps-custom-action wps-row">
+            <block class="wps-gridRow wps-settings-setup wpmc-settings-transfer">
+                <row class="wps-custom-action wps-settings-actions wps-row">
                     <?php
 
                     echo RequestActions::get_action_button($this->action_hook, 'reset_options', __('Reset Plugin options', 'members-control'));
@@ -98,12 +98,13 @@ class Mod_Settings extends Module
 
                     ?>
                 </row>
-                <row class="wps-custom-action wps-row">
+                <row class="wps-custom-action wps-settings-import wps-row">
                     <?php
 
                     Graphic::generate_field(array(
                         'id'      => 'conf_data',
                         'type'    => 'textarea',
+                        'classes' => 'wps-import-field',
                         'context' => 'block'
                     ));
 

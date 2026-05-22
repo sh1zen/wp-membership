@@ -28,9 +28,10 @@ class Mod_History extends Module
 
                 echo Graphic::generateHTML_tabs_panels(array(
                     array(
-                        'id'        => 'wpmc-history-list',
-                        'tab-title' => __('List', 'members-control'),
-                        'callback'  => array($this, 'render_list')
+                        'id'          => 'wpmc-history-list',
+                        'tab-title'   => __('List', 'members-control'),
+                        'callback'    => array($this, 'render_list'),
+                        'panel-flush' => true
                     )
                 ));
                 ?>
@@ -48,12 +49,10 @@ class Mod_History extends Module
 
         $table->prepare_items();
         ?>
-        <block class="wps-boxed--light">
-            <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
-                <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
-                <?php $table->display(); ?>
-            </form>
-        </block>
+        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form" autocomplete="off" autocapitalize="off">
+            <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
+            <?php $table->display(); ?>
+        </form>
         <?php
         return ob_get_clean();
     }

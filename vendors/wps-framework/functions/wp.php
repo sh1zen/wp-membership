@@ -342,13 +342,22 @@ function wps_multi_mail($to, $subject, $message, $headers = [], $attachments = [
     return wp_mail($to, $subject, $message, $headers, $attachments);
 }
 
-function wps_string_mather($haystack, $needle, $regex)
+function wps_string_mather($haystack, $needle, $regex): bool
 {
     if ($regex) {
-        return preg_match($needle, $haystack);
+        return preg_match($needle, $haystack) == 1;
     }
 
     return str_starts_with($haystack, $needle);
+}
+
+function wps_hook($hook, callable $callback): void
+{
+    if (did_action($hook)) {
+        $callback();
+    } else {
+        add_action($hook, $callback);
+    }
 }
 
 /**
@@ -416,19 +425,24 @@ function wps_user_has_role($role, $user): bool
 
 function wps_get_page_args($item = null, $default = false)
 {
-    $args = maybe_unserialize($_REQUEST['wpsargs'] ?? '');
+    $raw_args = wp_unslash((string)($_REQUEST['wpsargs'] ?? ''));
 
-    if (is_string($args)) {
-        $n_args = [];
-        // parse wps format
-        // key1:value1,key2:value2
-        foreach (explode(',', $args) as $arg) {
-            $parsed_arg = explode(':', $arg, 2);
-            if (isset($parsed_arg[0])) {
-                $n_args[$parsed_arg[0]] = $parsed_arg[1] ?? '';
-            }
+    if ('' === $raw_args) {
+        return $default;
+    }
+
+    $args = [];
+
+    // Parse wps format: key1:value1,key2:value2
+    foreach (explode(',', $raw_args) as $arg) {
+        $parsed_arg = explode(':', $arg, 2);
+        $key = sanitize_key(trim((string)($parsed_arg[0] ?? '')));
+
+        if ('' === $key) {
+            continue;
         }
-        $args = $n_args;
+
+        $args[$key] = sanitize_text_field((string)($parsed_arg[1] ?? ''));
     }
 
     if (empty($args)) {

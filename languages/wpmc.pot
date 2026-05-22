@@ -41,39 +41,51 @@ msgstr ""
 msgid "Request succeed"
 msgstr ""
 
-#: admin/PagesHandler.class.php:107
+#: admin/PagesHandler.class.php:142
+msgid "Active members"
+msgstr ""
+
+#: admin/PagesHandler.class.php:146
+msgid "Possible members"
+msgstr ""
+
+#: admin/PagesHandler.class.php:151
 msgid "Members by role:"
 msgstr ""
 
-#: admin/PagesHandler.class.php:115
+#: admin/PagesHandler.class.php:161
 msgid "Members by levels:"
 msgstr ""
 
-#: admin/PagesHandler.class.php:123
-msgid "Members Stats:"
+#: admin/PagesHandler.class.php:176
+msgid "Members Control helps you grow"
 msgstr ""
 
-#: admin/PagesHandler.class.php:132
-msgid "Support this project, buy me a coffee."
+#: admin/PagesHandler.class.php:177
+msgid "Support maintenance, fixes, and new features with a donation, or help more users discover the plugin with a 5-star review."
 msgstr ""
 
-#: admin/PagesHandler.class.php:147
-msgid "Want to support in other ways?"
+#: admin/PagesHandler.class.php:179
+msgid "Donate with PayPal"
 msgstr ""
 
-#: admin/PagesHandler.class.php:150
+#: admin/PagesHandler.class.php:180
+msgid "Leave a 5-star review"
+msgstr ""
+
+#: admin/PagesHandler.class.php:185
+msgid "Need help?"
+msgstr ""
+
+#: admin/PagesHandler.class.php:188
 msgid "Help me translating"
 msgstr ""
 
-#: admin/PagesHandler.class.php:153
-msgid "Leave a review"
-msgstr ""
-
-#: admin/PagesHandler.class.php:159
+#: admin/PagesHandler.class.php:196
 msgid "Source code"
 msgstr ""
 
-#: admin/PagesHandler.class.php:162
+#: admin/PagesHandler.class.php:199
 msgid "About me"
 msgstr ""
 
@@ -382,7 +394,7 @@ msgid "Subscribe"
 msgstr ""
 
 #: modules/newsletter.class.php:65
-msgid "News Letter"
+msgid "Newsletter"
 msgstr ""
 
 #: modules/newsletter.class.php:96

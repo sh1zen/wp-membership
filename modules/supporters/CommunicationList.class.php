@@ -69,22 +69,22 @@ class CommunicationList extends \WP_List_Table
 
     public function display_tablenav($which)
     {
-        if ('top' == $which) {
-            $this->search_box(__('Search', 'members-control'), 'wpmc-al-search');
-        }
         ?>
-        <row class="tablenav <?php echo esc_attr($which); ?>">
-            <?php if ($this->has_items()) : ?>
-                <row class="alignleft actions bulkactions">
-                    <?php $this->bulk_actions($which); ?>
-                </row>
+        <div class="tablenav <?php echo esc_attr($which); ?>">
+            <div class="wps-table-controls">
+                <?php if ($this->has_items()) : ?>
+                    <div class="alignleft actions bulkactions">
+                        <?php $this->bulk_actions($which); ?>
+                    </div>
+                <?php endif; ?>
+                <?php $this->extra_tablenav($which); ?>
+            </div>
+            <?php if ('top' == $which) : ?>
+                <?php $this->search_box(__('Search', 'members-control'), 'wpmc-al-search'); ?>
             <?php endif; ?>
-            <?php
-            $this->extra_tablenav($which);
-            $this->pagination($which);
-            ?>
+            <?php $this->pagination($which); ?>
             <br class="clear"/>
-        </row>
+        </div>
         <?php
     }
 
@@ -113,13 +113,13 @@ class CommunicationList extends \WP_List_Table
 
         echo '<div class="alignleft actions">';
 
-        submit_button(__('Filter', 'members-control'), 'button', 'aal-filter', false);
-
         echo '<select name="filter_active">';
         printf('<option value="">%s</option>', __('View All Messages', 'members-control'));
         printf('<option value="%s"%s>%s</option>', 'yes', selected($_REQUEST['filter_active'] ?? '', 'yes', false), __('View Active Communications', 'members-control'));
         printf('<option value="%s"%s>%s</option>', 'no', selected($_REQUEST['filter_active'] ?? '', 'no', false), __('View Inactive Communications', 'members-control'));
         echo '</select>';
+
+        submit_button(__('Filter', 'members-control'), 'button', 'aal-filter', false);
 
         echo '</div>';
     }

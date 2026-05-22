@@ -17,7 +17,7 @@ use WPMembership\modules\supporters\MembersList;
 
 class Mod_NewsLetter extends Module
 {
-    public static ?string $name = 'News Letter';
+    public static ?string $name = 'Newsletter';
 
     public array $scopes = array('admin-page', 'admin');
 
@@ -62,13 +62,14 @@ class Mod_NewsLetter extends Module
         ?>
         <section class="wps-wrap">
             <block class="wps">
-                <section class='wps-header'><h1><?php _e('News Letter', 'members-control'); ?></h1></section>
+                <section class='wps-header'><h1><?php _e('Newsletter', 'members-control'); ?></h1></section>
                 <?php
                 echo Graphic::generateHTML_tabs_panels(array(
                     array(
-                        'id'        => 'wpmc-members-list',
-                        'tab-title' => __('List', 'members-control'),
-                        'callback'  => array($this, 'render_list')
+                        'id'          => 'wpmc-members-list',
+                        'tab-title'   => __('List', 'members-control'),
+                        'callback'    => array($this, 'render_list'),
+                        'panel-flush' => true
                     )
                 ));
                 ?>
@@ -86,23 +87,21 @@ class Mod_NewsLetter extends Module
 
         $table->prepare_items();
         ?>
-        <block class="wps-boxed--light">
-            <form method="GET" class="wps" autocomplete="off" autocapitalize="off">
-                <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
-                <?php $table->display(); ?>
-                <?php RequestActions::nonce_field($this->action_hook); ?>
+        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form wpmc-newsletter-form" autocomplete="off" autocapitalize="off">
+            <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
+            <?php $table->display(); ?>
+            <?php RequestActions::nonce_field($this->action_hook); ?>
+            <div class="wpmc-newsletter-composer">
                 <input class="wps" type="text" name="nwsl-subject"
                        value="<?php echo esc_attr($_REQUEST['nwsl-subject'] ?? ''); ?>"
                        placeholder="<?php _e('E-mail subject', 'members-control'); ?>">
-                <br>
                 <textarea class="wps" name="nwsl-message" rows="10"
                           placeholder="<?php _e('Message', 'members-control'); ?>"><?php echo esc_attr($_REQUEST['nwsl-message'] ?? ''); ?></textarea>
-                <br>
-                <block class="wps-gridRow" style="justify-content: center">
+                <div class="wpmc-newsletter-actions">
                     <?php echo RequestActions::get_action_button($this->action_hook, "send-emails", __('Send now', 'members-control'), 'wps button-primary') ?>
-                </block>
-            </form>
-        </block>
+                </div>
+            </div>
+        </form>
         <?php
         return ob_get_clean();
     }

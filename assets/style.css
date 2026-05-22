@@ -1,13 +1,431 @@
-/**
- * @author    sh1zen
- * @copyright Copyright (C) 2025.
- * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL
- */
-
 :root {
-    --border-color: #c49350;
-    --tabs-bg-selected-color: #c49350;
-    --tabs-text-selected-color: #fff;
-    --main-dark-color: #dc9a30;
-    --header-text-color: #fff;
+    --wps-border-color: #2f7cf6;
+    --wps-tabs-bg-selected: #2f7cf6;
+    --wps-tabs-text-selected: #fff;
+    --wps-accent: #2f7cf6;
+    --wps-accent-rgb: 47 124 246;
+    --wps-main-dark: #0f2f5f;
+    --wps-main-light: #f3f7ff;
+    --wps-header-text: #fff;
+    --wps-bg-primary: #f5f8fc;
+    --wps-bg-white: #fff;
+    --wps-shadow-light: 0 8px 22px rgb(15 44 82 / 7%);
+    --wps-shadow-medium: 0 12px 30px rgb(15 44 82 / 9%);
+    --wps-radius-sm: 8px;
+    --wps-radius-md: 12px;
+    --wps-transition: 180ms ease;
+}
+
+.wpmc-dashboard .wpmc-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 0 0 22px;
+}
+
+.wpmc-dashboard .wpmc-stat-card {
+    padding: 16px;
+    border: 1px solid #d8e3f0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    box-shadow: 0 8px 18px rgb(16 54 104 / 5%);
+}
+
+.wpmc-dashboard .wpmc-stat-card span {
+    display: block;
+    margin-bottom: 8px;
+    color: #66758f;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.wpmc-dashboard .wpmc-stat-card strong {
+    color: #0d1f3a;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.wpmc-dashboard .wpmc-list-card {
+    margin: 0 0 20px;
+}
+
+.wpmc-dashboard .wpmc-list-card ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.wpmc-dashboard .wpmc-list-card li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid #d8e3f0;
+    border-radius: 10px;
+    background: #f8fbff;
+    color: #0d1f3a;
+}
+
+.wpmc-dashboard .wpmc-link-list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.wpmc-dashboard .wpmc-link-list li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.wpmc-dashboard .wpmc-link-list a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    padding: 10px 34px 10px 12px;
+    border: 1px solid #d7e5f5;
+    border-radius: 6px;
+    background: #fbfdff;
+    color: #20344f;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: none;
+    transition: background 180ms ease, box-shadow 180ms ease, color 180ms ease;
+}
+
+.wpmc-dashboard .wpmc-link-list a .dashicons,
+.wpmc-dashboard .wpmc-link-list a .wpmc-link-icon {
+    width: 17px;
+    height: 17px;
+    color: #d97706;
+    font-size: 17px;
+    line-height: 17px;
+    transition: color 180ms ease;
+}
+
+.wpmc-dashboard .wpmc-link-list a::after {
+    content: "\203A";
+    position: absolute;
+    right: 12px;
+    top: 0;
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    color: #d97706;
+    font-size: 18px;
+    font-weight: 800;
+    opacity: 1;
+    transition: color 180ms ease, right 180ms ease;
+}
+
+.wpmc-dashboard .wpmc-link-list a:hover,
+.wpmc-dashboard .wpmc-link-list a:focus {
+    border-color: #ead8bd;
+    background: #fffaf3;
+    color: #3a2a16;
+    box-shadow: 0 8px 18px rgb(146 64 14 / 7%);
+}
+
+.wpmc-dashboard .wpmc-link-list a:hover .dashicons,
+.wpmc-dashboard .wpmc-link-list a:focus .dashicons,
+.wpmc-dashboard .wpmc-link-list a:hover .wpmc-link-icon,
+.wpmc-dashboard .wpmc-link-list a:focus .wpmc-link-icon,
+.wpmc-dashboard .wpmc-link-list a:hover::after,
+.wpmc-dashboard .wpmc-link-list a:focus::after {
+    color: #92400e;
+}
+
+.wpmc-dashboard .wpmc-link-list a:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(146 64 14 / 12%), 0 0 16px rgb(146 64 14 / 14%);
+}
+
+.wpmc-sidebar .wps-box {
+    margin-bottom: 20px;
+    padding: 18px;
+    border: 1px solid #e1e7ef;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgb(15 23 42 / 6%);
+}
+
+.wpmc-sidebar .wps-box h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    color: #3a2a16;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.wpmc-sidebar .wps-box h3 .dashicons,
+.wpmc-sidebar .wps-box h3 .wpmc-sidebar-title-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    color: #d97706;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.wpmc-sidebar .wpmc-support-card-primary {
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.wpmc-sidebar .wps-donation-wrap {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 22px 22px 20px;
+    border: 1px solid #92400e;
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 100% 0, rgb(251 191 36 / 22%), transparent 78px),
+        linear-gradient(145deg, #3a2a16 0%, #92400e 100%);
+    box-shadow: 0 16px 32px rgb(146 64 14 / 24%);
+    color: #f8fafc;
+    text-align: left;
+}
+
+.wpmc-support-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    margin: 0 0 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    font-size: 21px;
+    line-height: 42px;
+    box-shadow: 0 12px 24px rgb(217 119 6 / 32%);
+}
+
+.wpmc-support-icon .wpmc-support-icon-svg {
+    width: 21px;
+    height: 21px;
+}
+
+.wpmc-sidebar .wps-donation-title {
+    color: #f8fafc;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 9px;
+}
+
+.wpmc-sidebar .wpmc-muted {
+    margin: 0 0 16px;
+    color: #ffe8c2;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.wpmc-sidebar .wpmc-support-cta {
+    display: grid;
+    gap: 10px;
+    margin-top: 0;
+}
+
+.wps-wrap .wpmc-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: 36px;
+    padding: 0 14px !important;
+    border-radius: 5px !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+
+.wpmc-sidebar .wpmc-support-cta .wpmc-btn {
+    width: 100%;
+}
+
+.wpmc-sidebar .wpmc-support-cta .wpmc-btn .dashicons,
+.wpmc-sidebar .wpmc-support-cta .wpmc-btn .wpmc-btn-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.wpmc-sidebar .wpmc-support-cta .wpmc-btn.is-success {
+    background: #27a84d !important;
+    border-color: #209647 !important;
+    color: #ffffff !important;
+}
+
+.wpmc-sidebar .wpmc-support-cta .wpmc-btn.is-neutral {
+    background: transparent !important;
+    border-color: #e0b16b !important;
+    color: #fff7ed !important;
+}
+
+.wps-core-settings-page .wpmc-settings-transfer .wps-settings-import {
+    margin-top: 4px;
+    padding-top: 18px;
+    border-top: 1px solid var(--wps-admin-page-line, #ead8bd);
+}
+
+.wpmc-list-table-form table.wp-list-table .row-title {
+    color: var(--wps-main-dark);
+    font-weight: 800;
+}
+
+.wpmc-list-table-form table.wp-list-table .row-actions a {
+    color: var(--wps-border-color);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.wpmc-list-table-form table.wp-list-table .row-actions .delete a {
+    color: #b42318;
+}
+
+.wpmc-list-table-form table.wp-list-table .wps--green,
+.wpmc-list-table-form table.wp-list-table .wps--red {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 0 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.wpmc-list-table-form table.wp-list-table .wps--green {
+    background: #ecfdf3;
+    color: #047857;
+}
+
+.wpmc-list-table-form table.wp-list-table .wps--red {
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.wpmc-newsletter-form {
+    padding-bottom: 34px;
+}
+
+.wpmc-newsletter-composer {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+    margin-bottom: 0;
+    padding: 18px 14px 18px;
+    border-top: 1px solid #f0dfc7;
+}
+
+.wpmc-newsletter-composer input.wps,
+.wpmc-newsletter-composer textarea.wps {
+    width: 100%;
+    max-width: none;
+    border-color: #ead8bd;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #3a2a16;
+    box-shadow: 0 1px 2px rgb(146 64 14 / 5%);
+}
+
+.wpmc-newsletter-composer input.wps {
+    min-height: 40px;
+}
+
+.wpmc-newsletter-composer textarea.wps {
+    min-height: 180px;
+    resize: vertical;
+}
+
+.wpmc-newsletter-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Members Control WPS admin theme. Shared layout lives in WPS framework. */
+body.wpmc-admin-screen {
+    --wps-border-color: #d97706;
+    --wps-tabs-bg-selected: #d97706;
+    --wps-accent: #d97706;
+    --wps-accent-rgb: 217 119 6;
+    --wps-main-dark: #92400e;
+    --wps-main-light: #fff7ed;
+    --wps-admin-page-blue: #d97706;
+    --wps-admin-page-blue-dark: #92400e;
+    --wps-admin-page-blue-light: #fbbf24;
+    --wps-admin-page-line: #ead8bd;
+    --wps-admin-page-ink: #3a2a16;
+    --wps-admin-page-muted: #766653;
+    --wps-admin-header-description: "Configure Members Control modules and membership workflows.";
+}
+
+body.wpmc-admin-screen .wpmc-dashboard {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: var(--wps-admin-page-gutter) !important;
+}
+
+body.wpmc-admin-screen .wpmc-dashboard > .wps {
+    display: grid;
+    gap: 22px;
+}
+
+body.wpmc-admin-screen .wpmc-dashboard block.wps,
+body.wpmc-admin-screen .wpmc-dashboard .wps-box {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+body.wpmc-admin-screen .wpmc-dashboard > .wps > block.wps {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+body.wpmc-admin-screen .wpmc-dashboard .wps-header {
+    background: linear-gradient(135deg, #92400e 0%, #d97706 62%, #fbbf24 100%);
+}
+
+body.wpmc-admin-screen .wpmc-dashboard .wpmc-stat-card {
+    border-color: #ead8bd;
+    background: linear-gradient(180deg, #ffffff 0%, #fffaf3 100%);
+    box-shadow: 0 8px 18px rgb(146 64 14 / 6%);
+}
+
+body.wpmc-admin-screen .wpmc-dashboard .wpmc-stat-card strong {
+    color: #92400e;
+}
+
+body.wpmc-admin-screen .wpmc-dashboard .wpmc-list-card li {
+    border-color: #ead8bd;
+    background: #fffaf3;
+    color: #3a2a16;
+}
+
+@media (max-width: 782px) {
+    body.wpmc-admin-screen .wpmc-dashboard {
+        padding: var(--wps-admin-page-gutter) !important;
+    }
 }

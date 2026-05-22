@@ -26,13 +26,15 @@ class RequestActions
      *  Internals
      *      self::$nonce_name => wp_create_nonce(self::$nonce_action)
      */
-    public static function request($hook, callable $callback = null, $short_circuit = false, $remove_query_args = false)
+    public static function request($hook, ?callable $callback = null, $short_circuit = false, $remove_query_args = false)
     {
         if (!self::is_valid_request($hook, $short_circuit) or self::$suspend) {
             return;
         }
 
-        if (!empty($_REQUEST[self::$nonce_name]) and !UtilEnv::verify_nonce(self::$nonce_action, $_REQUEST[self::$nonce_name])) {
+        $nonce = $_REQUEST[self::$nonce_name] ?? '';
+
+        if (!is_string($nonce) || '' === $nonce || !UtilEnv::verify_nonce(self::$nonce_action, $nonce)) {
 
             if (!wp_doing_ajax()) {
                 return;

@@ -7,6 +7,9 @@
 
 namespace WPMembership\core;
 
+use WPS\core\Graphic;
+use WPS\core\UtilEnv;
+
 /**
  * Creates the menu page for the plugin.
  *
@@ -19,6 +22,7 @@ class PagesHandler
     {
         add_action('admin_menu', array($this, 'add_plugin_pages'));
         add_action('admin_enqueue_scripts', array($this, 'register_assets'), 20, 0);
+        add_filter('admin_body_class', array($this, 'admin_body_classes'));
     }
 
     public function add_plugin_pages(): void
@@ -59,6 +63,32 @@ class PagesHandler
         wps('wpmc')->settings->render_core_settings();
     }
 
+    public function admin_body_classes(string $classes): string
+    {
+        $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
+
+        if (!$this->is_members_control_admin_screen($page)) {
+            return $classes;
+        }
+
+        return trim($classes . ' wps-admin-screen wpmc-admin-screen');
+    }
+
+    private function is_members_control_admin_screen(string $page): bool
+    {
+        if ($page === 'members-control' || $page === 'wpmc-settings') {
+            return true;
+        }
+
+        foreach (wps('wpmc')->moduleHandler->get_modules(array('scopes' => 'admin-page')) as $module) {
+            if (!empty($module['slug']) && $page === $module['slug']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function render_module(): void
     {
         $module_slug = sanitize_text_field($_GET['page']);
@@ -76,11 +106,9 @@ class PagesHandler
 
     public function register_assets(): void
     {
-        $assets_url = PluginInit::getInstance()->plugin_base_url;
+        $style_asset = UtilEnv::resolve_asset(WPMC_ABSPATH, 'assets/style.css', wps_core()->online);
 
-        $min = wps_core()->online ? '.min' : '';
-
-        wp_register_style("wpmc_css", "{$assets_url}assets/style{$min}.css", ['vendor-wps-css']);
+        wp_register_style("wpmc_css", $style_asset['url'], ['vendor-wps-css'], $style_asset['version'] ?: WPMC_VERSION);
 
         wps_localize([
             'saved'   => __('Settings Saved', 'members-control'),
@@ -97,74 +125,92 @@ class PagesHandler
     public function render_main(): void
     {
         $this->enqueue_scripts();
+        $active_members = wpmc_stats_count_members();
+        $possible_members = wpmc_stats_count_possible_members(['author']);
+        $donation_url = $this->get_donation_url();
+        $review_url = $this->get_review_url();
         ?>
-        <section class="wps-wrap-flex wps-wrap wps-home">
+        <section class="wps-wrap-flex wps-wrap wps-home wpmc-dashboard">
             <section class="wps">
                 <block class="wps">
                     <block class="wps-header">
                         <h1>Members Control Dashboard</h1>
                     </block>
-                    <h2><?php _e('Members by role:', 'members-control'); ?></h2>
-                    <ul class="wps">
-                        <?php
-                        foreach (count_users()['avail_roles'] ?? [] as $role => $count) {
-                            echo "<li class='wps'><strong>" . ucwords($role) . "</strong>: $count</li>";
-                        }
-                        ?>
-                    </ul>
-                    <h2><?php _e('Members by levels:', 'members-control'); ?></h2>
-                    <ul class="wps">
-                        <?php
-                        foreach (wpmc_get_levels() as $level) {
-                            echo "<li class='wps'><strong>" . ucwords($level->title) . "</strong>: " . $level->count() . "</li>";
-                        }
-                        ?>
-                    </ul>
-                    <h2><?php _e('Members Stats:', 'members-control'); ?></h2>
-                    <block class="wps">
-                        <?php echo wpmc_stats_count_members(). " / ". wpmc_stats_count_possible_members(['author']) . ' active members.'; ?>
-                    </block>
+                    <div class="wpmc-stats-grid">
+                        <div class="wpmc-stat-card">
+                            <span><?php _e('Active members', 'members-control'); ?></span>
+                            <strong><?php echo esc_html($active_members); ?></strong>
+                        </div>
+                        <div class="wpmc-stat-card">
+                            <span><?php _e('Possible members', 'members-control'); ?></span>
+                            <strong><?php echo esc_html($possible_members); ?></strong>
+                        </div>
+                    </div>
+                    <div class="wpmc-list-card">
+                        <h2><?php _e('Members by role:', 'members-control'); ?></h2>
+                        <ul class="wps">
+                            <?php
+                            foreach (count_users()['avail_roles'] ?? [] as $role => $count) {
+                                echo "<li class='wps'><strong>" . esc_html(ucwords($role)) . "</strong><span>" . esc_html($count) . "</span></li>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                    <div class="wpmc-list-card">
+                        <h2><?php _e('Members by levels:', 'members-control'); ?></h2>
+                        <ul class="wps">
+                            <?php
+                            foreach (wpmc_get_levels() as $level) {
+                                echo "<li class='wps'><strong>" . esc_html(ucwords($level->title)) . "</strong><span>" . esc_html($level->count()) . "</span></li>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
                 </block>
             </section>
-            <aside class="wps">
-                <section class="wps-box">
+            <aside class="wps wpmc-sidebar">
+                <section class="wps-box wpmc-support-card-primary">
                     <div class="wps-donation-wrap">
-                        <div class="wps-donation-title"><?php _e('Support this project, buy me a coffee.', 'members-control'); ?></div>
-                        <br>
-                        <a href="https://www.paypal.com/donate?business=dev.sh1zen%40outlook.it&item_name=Thank+you+in+advanced+for+the+kind+donations.+You+will+sustain+me+developing+MembersControl.&currency_code=EUR"
-                           target="_blank">
-                            <img src="https://www.paypalobjects.com/en_US/IT/i/btn/btn_donateCC_LG.gif"
-                                 title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button"/>
-                        </a>
-                        <div class="wps-donation-hr"></div>
-                        <div class="dn-btc">
-                            <div class="wps-donation-name">BTC:</div>
-                            <p class="wps-donation-value">3QE5CyfTxb5kufKxWtx4QEw4qwQyr9J5eo</p>
+                        <span class="wpmc-support-icon"><?php echo Graphic::icon('star', 'wpmc-support-icon-svg'); ?></span>
+                        <div class="wps-donation-title"><?php _e('Members Control helps you grow', 'members-control'); ?></div>
+                        <p class="wpmc-muted"><?php _e('Support maintenance, fixes, and new features with a donation, or help more users discover the plugin with a 5-star review.', 'members-control'); ?></p>
+                        <div class="wpmc-inline-actions wpmc-support-cta">
+                            <a class="wps wps-button wpmc-btn is-success" href="<?php echo esc_url($donation_url); ?>" target="_blank" rel="noopener noreferrer"><?php echo Graphic::icon('heart-fill', 'wpmc-btn-icon'); ?><?php _e('Donate with PayPal', 'members-control'); ?></a>
+                            <a class="wps wps-button wpmc-btn is-neutral" href="<?php echo esc_url($review_url); ?>" target="_blank" rel="noopener noreferrer"><?php echo Graphic::icon('star-outline', 'wpmc-btn-icon'); ?><?php _e('Leave a 5-star review', 'members-control'); ?></a>
                         </div>
                     </div>
                 </section>
                 <section class="wps-box">
-                    <h3><?php _e('Want to support in other ways?', 'members-control'); ?></h3>
-                    <ul class="wps">
+                    <h3><?php echo Graphic::icon('headphones', 'wpmc-sidebar-title-icon'); ?><?php _e('Need help?', 'members-control'); ?></h3>
+                    <ul class="wps wpmc-link-list">
                         <li>
-                            <a href="https://translate.wordpress.org/projects/wp-plugins/members-control/"><?php _e('Help me translating', 'members-control'); ?></a>
-                        </li>
-                        <li>
-                            <a href="https://wordpress.org/support/plugin/members-control/reviews/?filter=5"><?php _e('Leave a review', 'members-control'); ?></a>
+                            <a href="https://translate.wordpress.org/projects/wp-plugins/members-control/"><?php echo Graphic::icon('translate', 'wpmc-link-icon'); ?><?php _e('Help me translating', 'members-control'); ?></a>
                         </li>
                     </ul>
-                    <h3>Members Control:</h3>
-                    <ul class="wps">
+                </section>
+                <section class="wps-box">
+                    <h3><?php echo Graphic::icon('box', 'wpmc-sidebar-title-icon'); ?>Members Control</h3>
+                    <ul class="wps wpmc-link-list">
                         <li>
-                            <a href="https://github.com/sh1zen/members-control/"><?php _e('Source code', 'members-control'); ?></a>
+                            <a href="https://github.com/sh1zen/members-control/"><?php echo Graphic::icon('code', 'wpmc-link-icon'); ?><?php _e('Source code', 'members-control'); ?></a>
                         </li>
                         <li>
-                            <a href="https://sh1zen.github.io/"><?php _e('About me', 'members-control'); ?></a>
+                            <a href="https://sh1zen.github.io/"><?php echo Graphic::icon('user', 'wpmc-link-icon'); ?><?php _e('About me', 'members-control'); ?></a>
                         </li>
                     </ul>
                 </section>
             </aside>
         </section>
         <?php
+    }
+
+    private function get_donation_url(): string
+    {
+        return 'https://www.paypal.com/donate?business=dev.sh1zen%40outlook.it&item_name=Thank+you+in+advanced+for+the+kind+donations.+You+will+sustain+me+developing+MembersControl.&currency_code=EUR';
+    }
+
+    private function get_review_url(): string
+    {
+        return 'https://wordpress.org/support/plugin/members-control/reviews/?filter=5';
     }
 }
