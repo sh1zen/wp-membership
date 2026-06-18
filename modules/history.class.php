@@ -18,12 +18,11 @@ class Mod_History extends Module
 
     protected string $context = 'wpmc';
 
-    public function render_sub_modules(): void
+    public function render_sub_modules(bool $standalone = true): void
     {
         ?>
         <section class="wps-wrap">
             <block class="wps">
-                <section class='wps-header'><h1><?php _e('Subscriptions History', 'members-control'); ?></h1></section>
                 <?php
 
                 echo Graphic::generateHTML_tabs_panels(array(

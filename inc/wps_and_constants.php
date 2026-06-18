@@ -32,6 +32,7 @@ wps(
     ],
     [
         'cache'         => true,
+        'ajax'          => true,
         'moduleHandler' => true,
     ]
 );

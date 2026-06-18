@@ -111,13 +111,12 @@ class Mod_Communications extends Module
         }, false, true);
     }
 
-    public function render_sub_modules(): void
+    public function render_sub_modules(bool $standalone = true): void
     {
         $this->remove_browser_query_args(['bulk-action', 'bulk-comm-ids']);
         ?>
         <section class="wps-wrap">
             <block class="wps">
-                <section class='wps-header'><h1><?php _e('Communications', 'members-control'); ?></h1></section>
                 <?php
 
                 if (RequestActions::get_request($this->action_hook_page) === 'edit') {

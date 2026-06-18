@@ -11,6 +11,8 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+require_once __DIR__ . '/ListPaginationTrait.php';
+
 use WPS\core\RequestActions;
 use WPS\core\Query;
 use WPS\core\StringHelper;
@@ -18,6 +20,8 @@ use WPS\core\UtilEnv;
 
 class CommunicationList extends \WP_List_Table
 {
+    use ListPaginationTrait;
+
     private string $action_hook;
 
     private string $action_page_hook;

@@ -24,7 +24,7 @@ class Mod_Access extends Module
 
     private array $performer_response = array();
 
-    public function render_sub_modules(): void
+    public function render_sub_modules(bool $standalone = true): void
     {
         ?>
         <section class="wps-wrap">
@@ -44,7 +44,6 @@ class Mod_Access extends Module
             }
             ?>
             <block class="wps">
-                <section class='wps-header'><h1><?php echo __('Accessibility', 'members-control'); ?></h1></section>
                 <form id="wps-options" action="options.php" method="post">
                     <input type="hidden" name="<?php echo wps('wpmc')->settings->get_context() . "[change]" ?>"
                            value="<?php echo $this->slug; ?>">

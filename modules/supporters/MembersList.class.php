@@ -11,11 +11,15 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+require_once __DIR__ . '/ListPaginationTrait.php';
+
 use WPS\core\RequestActions;
 use WPS\core\Query;
 
 class MembersList extends \WP_List_Table
 {
+    use ListPaginationTrait;
+
     private string $action_hook;
 
     private string $action_page_hook;
@@ -81,8 +85,9 @@ class MembersList extends \WP_List_Table
         $member = wpmc_get_member($member);
 
         $edit_link = admin_url('user-edit.php?user_id=' . $member->get_user()->ID);
+        $display_name = ucwords(strtolower(esc_html($member->get_user()->display_name)));
 
-        $output = '<strong><a href="' . esc_url($edit_link) . '" class="row-title">' . ucwords(strtolower(esc_html($member->get_user()->display_name))) . '</a></strong>';
+        $output = '<span class="wpmc-member-identity"><strong><a href="' . esc_url($edit_link) . '" class="row-title">' . $display_name . '</a></strong></span>';
 
         $row_actions[] = "<span class='edit'><a target='_blank' href='$edit_link'>" . __('Edit', 'members-control') . "</a></span>";
 
@@ -179,6 +184,11 @@ class MembersList extends \WP_List_Table
 
     private function extra_tablenav_header()
     {
+        if ($this->context === 'news') {
+            $this->extra_newsletter_tablenav_header();
+            return;
+        }
+
         echo '<div class="alignleft actions">';
         echo '<select name="filter_level">';
         printf('<option value="">%s</option>', __('Filter by subscription', 'members-control'));
@@ -209,6 +219,47 @@ class MembersList extends \WP_List_Table
         printf('<option value="90"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '90', false), __('90 Days', 'members-control'));
         echo '</select>';
         submit_button(__('Filter', 'members-control'), 'button', '', false);
+        echo '</div>';
+    }
+
+    private function extra_newsletter_tablenav_header(): void
+    {
+        echo '<div class="wpmc-newsletter-filter-group">';
+
+        echo '<label class="wpmc-newsletter-filter-control">';
+        echo '<select name="filter_level">';
+        printf('<option value="">%s</option>', esc_html__('All Subscriptions', 'members-control'));
+        printf('<option value="0"%s>%s</option>', selected($_REQUEST['filter_level'] ?? '', '0', false), esc_html__('Inactive Users', 'members-control'));
+        foreach (wpmc_get_levels() as $level) {
+            printf('<option value="%s"%s>%s</option>', esc_attr($level->id), selected($_REQUEST['filter_level'] ?? '', $level->id, false), esc_html(ucwords($level->title)));
+        }
+        echo '</select>';
+        echo '</label>';
+
+        echo '<label class="wpmc-newsletter-filter-control">';
+        echo '<select name="filter_role">';
+        printf('<option value="">%s</option>', esc_html__('All Roles', 'members-control'));
+        foreach (wp_roles()->roles as $role_slug => $role_details) {
+            printf('<option value="%s"%s>%s</option>', esc_attr($role_slug), selected($_REQUEST['filter_role'] ?? '', $role_slug, false), esc_html(ucwords($role_details['name'])));
+        }
+        echo '</select>';
+        echo '</label>';
+
+        echo '<label class="wpmc-newsletter-filter-control">';
+        echo '<select name="filter_expiring">';
+        printf('<option value="">%s</option>', esc_html__('All Statuses', 'members-control'));
+        printf('<option value="7"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '7', false), esc_html__('7 Days', 'members-control'));
+        printf('<option value="30"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '30', false), esc_html__('30 Days', 'members-control'));
+        printf('<option value="60"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '60', false), esc_html__('60 Days', 'members-control'));
+        printf('<option value="90"%s>%s</option>', selected($_REQUEST['filter_expiring'] ?? '0', '90', false), esc_html__('90 Days', 'members-control'));
+        echo '</select>';
+        echo '</label>';
+
+        submit_button(__('Filter', 'members-control'), 'button wpmc-newsletter-filter-submit', '', false);
+
+        $reset_url = remove_query_arg(array('filter_level', 'filter_role', 'filter_expiring', 's', 'paged'));
+        echo '<a class="button wpmc-newsletter-reset" href="' . esc_url($reset_url) . '">' . esc_html__('Reset', 'members-control') . '</a>';
+
         echo '</div>';
     }
 
@@ -398,6 +449,8 @@ class MembersList extends \WP_List_Table
                     'email'        => __('E-mail', 'members-control'),
                     'subscription' => __('Subscription', 'members-control'),
                     'expire'       => __('Expire', 'members-control'),
+                    'renew_count'  => __('Payment Info', 'members-control'),
+                    'posts'        => __('Posts', 'members-control'),
                 ];
                 break;
 

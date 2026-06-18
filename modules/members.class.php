@@ -83,12 +83,11 @@ class Mod_Members extends Module
         }, false, true);
     }
 
-    public function render_sub_modules(): void
+    public function render_sub_modules(bool $standalone = true): void
     {
         ?>
         <section class="wps-wrap">
             <block class="wps">
-                <section class='wps-header'><h1><?php _e('Edit Members', 'members-control'); ?></h1></section>
                 <?php
                 if (RequestActions::get_request($this->action_hook_page, true) === 'add' or RequestActions::get_request($this->action_hook_page, true) === 'edit') {
                     echo $this->render_edit_membership();
@@ -130,7 +129,7 @@ class Mod_Members extends Module
 
         ob_start();
         ?>
-        <form method="POST" class="wps" autocapitalize="off" autocomplete="off">
+        <form method="POST" class="wps wpmc-membership-form" autocapitalize="off" autocomplete="off">
             <?php
 
             $subscriptions = [__("None", 'members-control') => 0];
@@ -154,7 +153,9 @@ class Mod_Members extends Module
             );
 
             RequestActions::nonce_field($this->action_hook);
+            echo '<div class="wpmc-membership-fields">';
             Graphic::generate_fields($setting_fields, $this->infos(), ['name_prefix' => 'membership']);
+            echo '</div>';
             ?>
             <row class="wps-custom-action wps-row">
                 <?php
@@ -181,7 +182,7 @@ class Mod_Members extends Module
 
         $table->prepare_items();
         ?>
-        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form" autocomplete="off" autocapitalize="off">
+        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form wpmc-members-table-form" autocomplete="off" autocapitalize="off">
             <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
             <?php $table->display(); ?>
             <?php RequestActions::nonce_field($this->action_hook); ?>

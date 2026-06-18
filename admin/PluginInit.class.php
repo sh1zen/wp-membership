@@ -222,7 +222,7 @@ class PluginInit
     {
         $links[] = sprintf(
             '<a href="%s">%s</a>',
-            admin_url('admin.php?page=wpmc-modules-settings'),
+            wps_module_setting_url('wpmc'),
             __('Settings', 'members-control')
         );
 

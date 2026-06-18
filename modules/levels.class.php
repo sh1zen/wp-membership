@@ -8,6 +8,7 @@
 namespace WPMembership\modules;
 
 use WPS\core\RequestActions;
+use WPS\core\Ajax;
 use WPS\core\addon\Exporter;
 use WPS\core\Graphic;
 use WPS\core\Query;
@@ -18,9 +19,14 @@ use WPMembership\modules\supporters\LevelsList;
 
 class Mod_Levels extends Module
 {
-    public array $scopes = array('admin-page', 'admin');
+    public array $scopes = array('admin-page', 'admin', 'ajax');
 
     protected string $context = 'wpmc';
+
+    public function restricted_access($context = ''): bool
+    {
+        return $context === 'ajax' && !current_user_can('manage_options');
+    }
 
     public function actions(): void
     {
@@ -31,22 +37,7 @@ class Mod_Levels extends Module
 
                 case 'update':
                 case 'add_new':
-                    $request = $_REQUEST['new_level'];
-
-                    $title = sanitize_text_field($request['title'] ?? '');
-
-                    $query->insert(['description' => $request['description'] ?? '']);
-                    $query->insert(['title' => $title]);
-                    $query->insert(['active' => isset($request['active']) ? '1' : '0']);
-                    $query->insert(['slug' => wps_generate_slug($title)]);
-                    $query->insert(['duration' => (absint($request['duration.unit'] ?: 0)) * (absint($request['duration.digit'] ?? 0)) ?: YEAR_IN_SECONDS]);
-                    $query->insert(['type' => sanitize_text_field($request['type'] ?: 'finite')]);
-
-                    if ($action == 'update') {
-                        $query->where(['id' => $request['level_id']]);
-                    }
-
-                    $response = $query->query();
+                    $response = $this->save_level($_REQUEST['new_level'] ?? [], $action === 'update');
                     break;
 
                 case 'activate':
@@ -103,12 +94,62 @@ class Mod_Levels extends Module
         }, false, true);
     }
 
-    public function render_sub_modules(): void
+    public function ajax_handler($args = array()): void
+    {
+        if (($args['action'] ?? '') !== 'autosave_level') {
+            parent::ajax_handler($args);
+            return;
+        }
+
+        parse_str((string)($args['form_data'] ?? ''), $form_data);
+
+        $request = $form_data['new_level'] ?? [];
+
+        if (!is_array($request) || empty($request['level_id'])) {
+            Ajax::response([
+                'text' => __('Cannot detect which subscription plan must be saved.', 'members-control'),
+            ], 'error');
+        }
+
+        $response = $this->save_level($request, true);
+
+        if (!$response) {
+            Ajax::response([
+                'text' => __('Autosave failed while updating the subscription plan.', 'members-control'),
+            ], 'error');
+        }
+
+        Ajax::response([
+            'text'     => __('Subscription plan autosaved.', 'members-control'),
+            'level_id' => absint($request['level_id']),
+        ], 'success');
+    }
+
+    private function save_level(array $request, bool $is_update): bool
+    {
+        $query = Query::getInstance()->tables(WP_MEMBERSHIP_TABLE_LEVELS);
+
+        $title = sanitize_text_field($request['title'] ?? '');
+
+        $query->insert(['description' => $request['description'] ?? '']);
+        $query->insert(['title' => $title]);
+        $query->insert(['active' => isset($request['active']) ? '1' : '0']);
+        $query->insert(['slug' => wps_generate_slug($title)]);
+        $query->insert(['duration' => (absint($request['duration.unit'] ?: 0)) * (absint($request['duration.digit'] ?? 0)) ?: YEAR_IN_SECONDS]);
+        $query->insert(['type' => sanitize_text_field($request['type'] ?: 'finite')]);
+
+        if ($is_update) {
+            $query->where(['id' => absint($request['level_id'] ?? 0)]);
+        }
+
+        return (bool)$query->query();
+    }
+
+    public function render_sub_modules(bool $standalone = true): void
     {
         ?>
         <section class="wps-wrap">
             <block class="wps">
-                <section class='wps-header'><h1><?php _e('Subscription plans', 'members-control'); ?></h1></section>
                 <?php
                 if (RequestActions::get_request($this->action_hook_page) === 'edit') {
                     echo $this->render_edit();
@@ -182,9 +223,11 @@ class Mod_Levels extends Module
 
     public function render_new($defaults = []): string
     {
+        $is_edit = isset($defaults['id']) and $defaults['id'];
+
         ob_start();
         ?>
-        <form method="POST" class="wps" autocapitalize="off" autocomplete="off">
+        <form method="POST" class="wps wpmc-level-form<?php echo $is_edit ? ' wpmc-level-autosave-form' : ''; ?>" autocapitalize="off" autocomplete="off" <?php echo $is_edit ? 'data-wpmc-autosave="level"' : ''; ?>>
             <?php
 
             $setting_fields = $this->group_setting_fields(
@@ -213,9 +256,9 @@ class Mod_Levels extends Module
             ?>
             <row class="wps-custom-action wps-row">
                 <?php
-                if (isset($defaults['id']) and $defaults['id']) {
-                    echo RequestActions::get_action_button($this->action_hook, 'update', __('Update', 'members-control'), 'button-primary');
+                if ($is_edit) {
                     echo "<input type='hidden' name='new_level[level_id]' value='" . esc_attr($defaults['id']) . "'>";
+                    echo '<span class="wpmc-autosave-status" aria-live="polite">' . esc_html__('All changes saved', 'members-control') . '</span>';
                 }
                 else {
                     echo RequestActions::get_action_button($this->action_hook, 'add_new', __('Add new', 'members-control'), 'button-primary');
@@ -236,7 +279,7 @@ class Mod_Levels extends Module
 
         $table->prepare_items();
         ?>
-        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form" autocomplete="off" autocapitalize="off">
+        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form wpmc-levels-table-form" autocomplete="off" autocapitalize="off">
             <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
             <?php $table->display(); ?>
             <?php RequestActions::nonce_field($this->action_hook); ?>

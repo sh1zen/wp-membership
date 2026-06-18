@@ -57,12 +57,11 @@ class Mod_NewsLetter extends Module
         }, false, true);
     }
 
-    public function render_sub_modules(): void
+    public function render_sub_modules(bool $standalone = true): void
     {
         ?>
         <section class="wps-wrap">
             <block class="wps">
-                <section class='wps-header'><h1><?php _e('Newsletter', 'members-control'); ?></h1></section>
                 <?php
                 echo Graphic::generateHTML_tabs_panels(array(
                     array(
@@ -87,7 +86,7 @@ class Mod_NewsLetter extends Module
 
         $table->prepare_items();
         ?>
-        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form wpmc-newsletter-form" autocomplete="off" autocapitalize="off">
+        <form method="GET" class="wps wps-list-table-form wpmc-list-table-form wpmc-members-table-form wpmc-newsletter-form" autocomplete="off" autocapitalize="off">
             <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
             <?php $table->display(); ?>
             <?php RequestActions::nonce_field($this->action_hook); ?>
