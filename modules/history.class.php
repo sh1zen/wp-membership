@@ -50,6 +50,9 @@ class Mod_History extends Module
         ?>
         <form method="GET" class="wps wps-list-table-form wpmc-list-table-form" autocomplete="off" autocapitalize="off">
             <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>"/>
+            <?php if (!empty($_REQUEST['wps-page'])) : ?>
+                <input type="hidden" name="wps-page" value="<?php echo esc_attr(sanitize_key(wp_unslash($_REQUEST['wps-page']))); ?>"/>
+            <?php endif; ?>
             <?php $table->display(); ?>
         </form>
         <?php
